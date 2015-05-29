@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 void view_events_raw() {
-	/*** Used only when input file is an _interpreted_raw.root file (called raw file). Opens a window that allows you to view events one by one. "Enter" to go to next event, "q" to quit. 
+	/*** Used only when input file is an _interpreted_raw.root file (called raw file). Opens a window that allows you to view events one by one. "Enter" to go to next event, 'b' for previous event, <number> for specific event num, or 'q' to quit.
 	You can specify which event number to start at. Ctrl-F "CHANGE THIS" in this script to find the line.
 
 	Note: trigger_number is used for self-trigger scan data; trigger_time_stamp is for ext-trigger-stopmode scan data.
@@ -40,24 +40,18 @@ void view_events_raw() {
 	int maxNoEntries = 50; //max number of times it can print out "no entries for __"; after this, program stops
 	int noEntriesCnt = 0; // count 
 	bool quit = false; // for maxNoEntries
+	bool noMoreEvents = false;
 
-	// Sorry, I copy-pasted a bunch of code, because I didn't have time lol
-	
-	// First event - set tr to correct entry, fill histogram, and draw it
-	tr.SetEntry(0);
-	while (tr.Next()) { //this is to set the entry number of tr to the first entry that has event number event_num
-		if (*event_number >= event_num) {
-			break;
-		}
-	}
-
+	// For first event only: fill histogram, and draws it
+	// Fill histogram, and draws it
+	h->Reset();
 	while (true) {
 		while (tr.Next()) { //fills histogram with all its hits (hits with same event_num)
 			if (*event_number == event_num) {
 				h->Fill(*x, *y);
 			} else {
 				tr.SetEntry(tr.GetCurrentEntry() - 1);
-				break; //TODO bool for each while to break
+				break;
 			}
 		}
 
@@ -67,7 +61,7 @@ void view_events_raw() {
 			noEntriesCnt = 0;
 			break;
 		} else if (noEntriesCnt >= maxNoEntries) {
-			quit = true; //TODO
+			noMoreEvents = true;
 			break;
 		} else {
 			printf("No entries for event_num %d\n", event_num);
@@ -76,9 +70,8 @@ void view_events_raw() {
 		event_num++;
 	}
 
-	// Main Loop --------------------------------------------------------------------
-	//int event_num = event_num; // @@@
-	while (true) {
+	// Main Loop
+	while (!noMoreEvents) {
 		printf("event_num: %d\n", event_num);
 		printf("'Enter' for next event, 'b' for previous event, <number> for specific event num, or 'q' to quit.\n");
 		gets(input);  // "enter" is enough, root waits until you hit a key
@@ -125,7 +118,7 @@ void view_events_raw() {
 				noEntriesCnt = 0;
 				break;
 			} else if (noEntriesCnt >= maxNoEntries) {
-				quit = true;
+				noMoreEvents = true;
 				break;
 			} else {
 				printf("No entries for event_num %d\n", event_num);
