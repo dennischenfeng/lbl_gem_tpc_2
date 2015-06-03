@@ -1,6 +1,6 @@
 
 void view_events_h5() {
-/*** Only for ..._interpreted.h5 files. Opens a window that allows you to view events one by one. "Enter" to go to next event, "q" to quit. 
+/*** Only for ..._interpreted.root files (creating by convert_multi_table.py). Opens a window that allows you to view events one by one. "Enter" to go to next event, "q" to quit. 
 You can specify which event number to start at. Ctrl-F "CHANGE THIS" in this script to find the line.
 
 Note: trigger_number is used for self-trigger scan data; trigger_time_stamp is for ext-trigger-stopmode scan data.
@@ -8,7 +8,7 @@ Note: trigger_number is used for self-trigger scan data; trigger_time_stamp is f
 gROOT->Reset(); 
 
 //--Setting up file, treereader, histogram
-TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2/host/pybar/module_test/408_module_test_stop_mode_ext_trigger_scan_interpreted_raw.root");
+TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2/host/pybar/module_test/408_module_test_stop_mode_ext_trigger_scan_interpreted.root");
 
 if (f == 0) { // if we cannot open the file, print an error message and return immediately
 	printf("Error: cannot open the root file!\n");
@@ -51,7 +51,7 @@ while (tReader.Next()) { //this is to set the entry number of tReader to the fir
 	}
 }
 
-maxNoEntries = 500; //max number of times it can print out "no entries for __"; after this, program stops
+maxNoEntries = 50; //max number of times it can print out "no entries for __"; after this, program stops
 noEntriesCnt = 0; // count 
 while (input[0] != 'q') {
 	while (tReader.Next()) { //fills histogram with all its hits (hits with same event_num)

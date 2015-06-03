@@ -1,8 +1,17 @@
 #!/bin/bash
 # Runs a specified scan as many times as you want. Also adds to run_extra_info_txt the info that you specify.
 
-OTHER_INFO="None GEM-400 scantime-180 maxtrig-5 (bulk CR events)"
-NUM_SCANS=30
+OTHER_INFO="CR GEM-400 Pcp-756 scantime-180 maxtrig-4 (bulk CR events)"
+NUM_SCANS=1
+
+
+
+
+
+
+
+
+
 
 cd /home/pixel/pybar/tags/2.0.2/host/pybar/scans
 
