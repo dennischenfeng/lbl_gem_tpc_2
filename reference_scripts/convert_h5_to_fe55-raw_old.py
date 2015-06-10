@@ -1,21 +1,21 @@
 """
 Creates a CERN ROOT file that contains a TTree that holds all the necessary data 
-values in its branches. Uses the hit table from the _interpreted.h5 
-file of the desired scan to convert. Note that the metadata table isn't actually used 
-anymore (it's a vestigial part of this script).
+values in its branches. Uses the h5 hit and metadata tables to convert.
 
-The TTree contains: (name of branch, root type descriptor, root type)
-1. h5_file_num, i, UInt_t
-2. event_number, L, Long64_t (same numbers as indicated by h5 file)
-3. tot, b, UChar_t
-4. relative_BCID, b, UChar_t
-5. x, D, Double_t (in mm)
-6. y, D, Double_t 
-7. z, D, Double_t
+The TTree contains: (name of value, root type descriptor)
+- h5_file_num, i
+- time_stamp_start, D
+- event_num, L (same labels as indicated by h5 file)
+- tot, b
+- relative_BCID, b
+- x, D
+- y, D
+- z, D
 
 Depending on whether you want to convert self_trigger scans or ext_trigger_stop_mode scans, you may need to choose which init_hit_struct() to use.
 
-This script is based on convert_table_root_tree.py (from pybar) and convert_multi_table.py(from Andrew Hard). 
+This script is based on convert_table_root_tree.py (from pybar) and convert_multi_table.py
+(from Andrew Hard). 
 
 Author: Dennis Feng
 """
@@ -75,7 +75,7 @@ def init_meta_struct():
     gROOT.ProcessLine(
         "struct MetaInfo{\
         Int_t event_number;\
-        Double_t timestamp_start;\
+        Int_t timestamp_start;\
         Double_t timestamp_stop;\
         UChar_t error_code;\
     };")
@@ -83,15 +83,22 @@ def init_meta_struct():
     return MetaInfo();
 
 '''
-This is to contain the info for some extra variables/calculations that weren't included in the h5 tables: h5_file_num, x, y, z
+This is to contain the info for calculated data, such as z, mean x, RMSxyz, etc.
 '''
 def init_extracalc_struct():
     gROOT.ProcessLine(
         "struct ExtraCalcInfo{\
-        UInt_t h5_file_num;\
-        Double_t x;\
-        Double_t y;\
+        UInt_t raw_file_num;\
         Double_t z;\
+        UInt_t num_hits;\
+        UInt_t sum_tots;\
+        Double_t mean_x;\
+        Double_t mean_y;\
+        Double_t mean_z;\
+        Double_t R_xy;\
+        Double_t R_xyz;\
+        Double_t RMS_xy;\
+        Double_t RMS_xyz;\
     };")
     from ROOT import ExtraCalcInfo
     return ExtraCalcInfo();
@@ -155,7 +162,7 @@ def init_tree_from_table(hit_table, meta_table, chunk_size=1, hit_tree_entry=Non
     if(chunk_size > 1 and hit_tree_entry is not None and meta_tree_entry is not None):
         raise NotImplementedError()
 
-    tree = TTree('Table', 'Raw (.root) Data')
+    tree = TTree('Table', 'Converted HDF5 table')
     n_entries = None
     if chunk_size > 1:
         n_entries = ctypes.c_int(chunk_size) if chunk_size > 1 else 1
@@ -173,18 +180,29 @@ def init_tree_from_table(hit_table, meta_table, chunk_size=1, hit_tree_entry=Non
     #    if meta_column_name == 'timestamp_start' or meta_column_name == 'timestamp_stop':
     #        tree.Branch(meta_column_name, 'NULL' if meta_tree_entry is None else AddressOf(meta_tree_entry, meta_column_name), meta_column_name + '[n_entries]/' + get_root_type_descriptor(meta_table.dtype[meta_column_name]) if chunk_size > 1 else meta_column_name + '/' + get_root_type_descriptor(meta_table.dtype[meta_column_name]))
     
-    tree.Branch('h5_file_num', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'h5_file_num'), 'h5_file_num' + '/' + 'i')
+    tree.Branch('raw_file_num', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'raw_file_num'), 'raw_file_num' + '/' + 'i')
+    tree.Branch('timestamp_start', 'NULL' if meta_tree_entry is None else AddressOf(meta_tree_entry, 'timestamp_start'), 'timestamp_start' + '[n_entries]/' + 'D' if chunk_size > 1 else 'timestamp_start' + '/' + 'D')
+    #tree.Branch('time_stamp', 'NULL' if hit_tree_entry is None else AddressOf(time_stamp), 'time_stamp' + '[n_entries]/' + 'I' if chunk_size > 1 else 'time_stamp' + '/' + 'I')
     tree.Branch('event_number', 'NULL' if hit_tree_entry is None else AddressOf(hit_tree_entry, 'event_number'), 'event_number' + '[n_entries]/' + 'L' if chunk_size > 1 else 'event_number' + '/' + 'L')
+    tree.Branch('x', 'NULL' if hit_tree_entry is None else AddressOf(hit_tree_entry, 'column'), 'x' + '[n_entries]/' + 'b' if chunk_size > 1 else 'x' + '/' + 'b')
+    tree.Branch('y', 'NULL' if hit_tree_entry is None else AddressOf(hit_tree_entry, 'row'), 'y' + '[n_entries]/' + 's' if chunk_size > 1 else 'y' + '/' + 's')
     tree.Branch('tot', 'NULL' if hit_tree_entry is None else AddressOf(hit_tree_entry, 'tot'), 'tot' + '[n_entries]/' + 'b' if chunk_size > 1 else 'tot' + '/' + 'b')
     tree.Branch('relative_BCID', 'NULL' if hit_tree_entry is None else AddressOf(hit_tree_entry, 'relative_BCID'), 'relative_BCID' + '[n_entries]/' + 'b' if chunk_size > 1 else 'relative_BCID' + '/' + 'b')
-    tree.Branch('x', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'x'), 'x' + '[n_entries]/' + 'D' if chunk_size > 1 else 'x' + '/' + 'D')
-    tree.Branch('y', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'y'), 'y' + '[n_entries]/' + 'D' if chunk_size > 1 else 'y' + '/' + 'D')
     tree.Branch('z', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'z'), 'z' + '[n_entries]/' + 'D' if chunk_size > 1 else 'z' + '/' + 'D')
-    
+    tree.Branch('num_hits', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'num_hits'), 'num_hits' + '[n_entries]/' + 'i' if chunk_size > 1 else 'num_hits' + '/' + 'i')
+    tree.Branch('sum_tots', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'sum_tots'), 'sum_tots' + '[n_entries]/' + 'i' if chunk_size > 1 else 'sum_tots' + '/' + 'i')
+    tree.Branch('mean_x', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'mean_x'), 'mean_x' + '[n_entries]/' + 'D' if chunk_size > 1 else 'mean_x' + '/' + 'D')
+    tree.Branch('mean_y', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'mean_y'), 'mean_y' + '[n_entries]/' + 'D' if chunk_size > 1 else 'mean_y' + '/' + 'D')
+    tree.Branch('mean_z', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'mean_z'), 'mean_z' + '[n_entries]/' + 'D' if chunk_size > 1 else 'mean_z' + '/' + 'D')
+    tree.Branch('R_xy', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'R_xy'), 'R_xy' + '[n_entries]/' + 'D' if chunk_size > 1 else 'R_xy' + '/' + 'D')
+    tree.Branch('R_xyz', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'R_xyz'), 'R_xyz' + '[n_entries]/' + 'D' if chunk_size > 1 else 'R_xyz' + '/' + 'D')
+    tree.Branch('RMS_xy', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'RMS_xy'), 'RMS_xy' + '[n_entries]/' + 'D' if chunk_size > 1 else 'RMS_xy' + '/' + 'D')
+    tree.Branch('RMS_xyz', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'RMS_xyz'), 'RMS_xyz' + '[n_entries]/' + 'D' if chunk_size > 1 else 'RMS_xyz' + '/' + 'D')
+
     return tree, n_entries
 
 
-def convert_two_hit_tables(input_filename, output_filename, h5_file_num):
+def convert_two_hit_tables(input_filename, output_filename):
     ''' Creates a ROOT Tree by looping over all entries of the table.
     In each iteration all entries are type casting to int and appended to the ROOT Tree. This is straight forward but rather slow (45 kHz Hits).
     The ROOT Tree has its addresses pointing to a hit struct members. The struct is defined in ROOT.
@@ -197,9 +215,6 @@ def convert_two_hit_tables(input_filename, output_filename, h5_file_num):
     output_filename: string
         The filename of the created ROOT file
 
-    h5_file_num: int
-        The number of the h5 file; assigned by pybar
-        
     '''
     with tb.open_file(input_filename, 'r') as in_file_h5:
 
@@ -256,33 +271,17 @@ def convert_two_hit_tables(input_filename, output_filename, h5_file_num):
                 myMeta.timestamp_stop = float(event['timestamp_stop'])
             
             # Here, we calc the values for the calculated data and assign them
-            
-            '''
-            # First, figure out the h5_file_num; this assumes the pybar's default convention for naming output raw data files (ex: 100_module_test_stop_mode_..._scan.h5)
-            def is_number(s): #from Daniel Goldberg on StackOverflow
-                try:
-                    float(s)
-                    return True
-                except ValueError:
-                    return False
-
-            h5_file_num_str = ''
-            for i in xrange(0, len(input_filename)):
-                if input_filename[i] == '/' and is_number(input_filename[i + 1]):
-                    for j in (i + 2, len(input_filename)):
-                        if input_filename[j] != '_' and (not is_number(input_filename[j])):
-                            h5_file_num_str = ''
-                            break
-                        elif is_number(input_filename[j]):
-                            h5_file_num_str += input_filename[j]
-                        elif input_filename[j] == '_':
-                            break
-            '''
-
-            myExtraCalc.h5_file_num = h5_file_num
-            myExtraCalc.x = (int(hit['column']) - 1) * 0.25 + 0.001 # + 0.001 is to get rid of any tiny roundoff errors due to using a doubles
-            myExtraCalc.y = - (int(hit['row']) - 1) * 0.05 + 0.001 # 
-            myExtraCalc.z = 12.5
+            myExtraCalc.raw_file_num = 100
+            myExtraCalc.z = 0
+            myExtraCalc.num_hits = 100
+            myExtraCalc.sum_tots = 0
+            myExtraCalc.mean_x = 0
+            myExtraCalc.mean_y = 0
+            myExtraCalc.mean_z = 0
+            myExtraCalc.R_xy = 0
+            myExtraCalc.R_xyz = 0
+            myExtraCalc.RMS_xy = 0
+            myExtraCalc.RMS_xyz = 0
 
             # Fill the tree that includes data from both trees. 
             tree.Fill()
@@ -293,8 +292,7 @@ def convert_two_hit_tables(input_filename, output_filename, h5_file_num):
         out_file_root.Write()
         out_file_root.Close()
 
-"""
-# This method is not used
+
 def convert_hit_table_fast(input_filename, output_filename):
     ''' Creates a ROOT Tree by looping over chunks of the hdf5 table. Some pointer magic is used to increase the conversion speed. Is 40x faster than convert_hit_table.
 
@@ -336,15 +334,13 @@ def convert_hit_table_fast(input_filename, output_filename):
 
         out_file_root.Write()
         out_file_root.Close()
-"""
+
 
 if __name__ == "__main__":
-    path_to_folder = '/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new'
-    h5_file_num = 47
-
     # chose this parameter as big as possible to increase speed, but not too 
     # big otherwise program crashed:
     chunk_size = 50000  
-    
-    convert_two_hit_tables(path_to_folder + '/' + str(h5_file_num) + '_module_202_new_stop_mode_ext_trigger_scan_interpreted.h5', path_to_folder + '/' + str(h5_file_num) + '_module_202_new_stop_mode_ext_trigger_scan_interpreted_raw.root', h5_file_num)
+    convert_two_hit_tables('/home/pixel/pybar/tags/2.0.2/host/pybar/module_test/111_module_test_stop_mode_ext_trigger_scan_interpreted.h5', '/home/pixel/pybar/tags/2.0.2/host/pybar/module_test/111_module_test_stop_mode_ext_trigger_scan_interpreted_fe55-calcdata.root')
+
+    #convert_two_hit_tables('/home/pixel/pybar/tags/2.0.2/host/pybar/module_test/87_module_test_fei4_self_trigger_scan_interpreted.h5', '/home/pixel/pybar/tags/2.0.2/host/pybar/module_test/87_module_test_fei4_self_trigger_scan_interpreted.root')
     

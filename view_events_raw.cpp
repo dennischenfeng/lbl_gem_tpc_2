@@ -1,44 +1,29 @@
-#include <iostream>
 
-// Helper function
-bool canConvertStringToPosInt(string str) { // can convert string to pos int
-	// every character must be a digit; does not allow '-' or '.' or anything else
-	for (int i = 0; i < str.size(); i++) {
-	    if ((int) str[i] < 48 || (int) str[i] > 57) { // b/c (int)'0' == 48
-	        return false;
-	    }
-	}
+#include "TROOT.h"
+#include "TFile.h"
+#include "TTreeReader.h"
+#include "TTreeReaderValue.h"
+#include "TCanvas.h"
+#include "TH2F.h"
 
-	return true;
-}
-
-// Helper function
-int convertStringToPosInt(string str) {
-	int result = 0;
-	int digitPlace;
-
-	for (int i = 0; i < str.size(); i++) {
-		digitPlace = str.size() - i;
-		result += (int)pow(10, digitPlace - 1) * ((int)str[i] - 48);
-	}
-
-	return result;
-}
+#include "viewer_helper_functions.cpp"
 
 void view_events_raw() {
-	/*** Used only when input file is an _interpreted_raw.root file (called raw file). Opens a window that allows you to view events one by one. "Enter" to go to next event, 'b' for previous event, <number> for specific event num, or 'q' to quit.
+	/*** Used only when input file is an _interpreted_raw.root file (called raw file). Opens a window that allows you to view h5-events one by one. "Enter" to go to next event, 'b' for previous event, <number> for specific event num, or 'q' to quit.
 	You can specify which event number to start at. Ctrl-F "CHANGE THIS" in this script to find the line.
 
 	Note: trigger_number is used for self-trigger scan data; trigger_time_stamp is for ext-trigger-stopmode scan data.
 	***/
 	gROOT->Reset(); 
 
-	//--Setting up file, treereader, histogram
-	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2/host/pybar/module_test/745_module_test_stop_mode_ext_trigger_scan_interpreted_raw.root");
+	// Setting up file, treereader, histogram
+	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/46_module_202_new_stop_mode_ext_trigger_scan_interpreted_raw.root");
+
+	//TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2/host/pybar/module_test/745_module_test_stop_mode_ext_trigger_scan_interpreted_raw.root");
 
 	if (!f) { // if we cannot open the file, print an error message and return immediately
 		cout << "Error: cannot open the root file!\n";
-		return;
+		//return;
 	}
 
 	TTreeReader reader("Table", f);
@@ -52,8 +37,8 @@ void view_events_raw() {
 	TTreeReaderValue<Double_t> z(reader, "z");
 
 	// Initialize the histogram
-	TCanvas *c1 = new TCanvas("c1","Histograms");
-	TH2F *h = new TH2F("h", "Occupancy for Specified Event", 80, 0, 20, 336, -16.8, 0);
+	TCanvas *c1 = new TCanvas("c1","Occupancy for Specified h5 Event");
+	TH2F *h = new TH2F("h", "Occupancy for Specified h5 Event", 80, 0, 20, 336, -16.8, 0);
 	h->GetXaxis()->SetTitle("x (mm)");
 	h->GetYaxis()->SetTitle("y (mm)");
 	//h->SetMarkerStyle(7);
@@ -108,7 +93,7 @@ void view_events_raw() {
 			h->Draw("COLZ");
             c1->Update();
 
-            cout << "Current Event Number: " << *event_number << "\n";
+            cout << "Current h5 Event Number: " << *event_number << "\n";
             
             bool inStringValid = false;
             do {
