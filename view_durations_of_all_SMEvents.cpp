@@ -6,25 +6,7 @@
 #include "TCanvas.h"
 #include "TH2F.h"
 
-
-// Helper functions
-int getSMEventNum(Long64_t event_number, UChar_t relative_BCID) {
-	/* Returns the SM-event number. 
-	
-	Note: h5 event = events are differentiated by event_number in h5 file) that marks the start of the SM event (events are differentiated by groups of 16 event_numbers
-	*/
-
-	return (int) (event_number / 16);
-}
-
-int getCurrBCID(Long64_t event_number, UChar_t relative_BCID) {
-	/* Returns the current BCID number of the SM-event that this hit is in. 
-	
-	Note: h5 event = events are differentiated by event_number in h5 file) that marks the start of the SM event (events are differentiated by groups of 16 event_numbers
-	*/
-	
-	return (event_number - ((int)(event_number/16)) * 16) * 16 + relative_BCID; // Range: 0 - 255
-}
+#include "viewer_helper_functions.cpp"
 
 void view_durations_of_all_SMEvents() {
 	/*** Used only when input file is an _interpreted_raw.root file (called raw file). Displays a 1D histogram of Count (SM events) vs Duration of SM event (BCIDs). There's 1 histogram for the entire raw file (many SM events). 
@@ -54,7 +36,7 @@ void view_durations_of_all_SMEvents() {
 	TTreeReaderValue<Double_t> z(reader, "z");
 
 	// Initialize the histogram
-	TCanvas *c1 = new TCanvas("c1","Histogram");
+	TCanvas *c1 = new TCanvas("c1","Durations of all SM events");
 	TH1F *h = new TH1F("h", "Durations of all SM events", 60, 0, 60);
 	h->GetXaxis()->SetTitle("Duration of SM event (BCIDs)");
 	h->GetYaxis()->SetTitle("Count (SM events)");
@@ -70,7 +52,7 @@ void view_durations_of_all_SMEvents() {
 	while (reader.Next()) {
 		
 		smEventNum_f = getSMEventNum(*event_number, *relative_BCID);
-		currBCID_f = getCurrBCID(*event_number, *relative_BCID);
+		currBCID_f = getSMRelBCID(*event_number, *relative_BCID);
 
 
 		if (smEventNum_f == smEventNum && \

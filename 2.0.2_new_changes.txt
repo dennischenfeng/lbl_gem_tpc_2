@@ -1,0 +1,54 @@
+
+Date: 15/06/03
+
+REMEMBER TO INSTALL PYBAR!
+	"python setup.py develop"
+
+ENABLING THE HIT TABLE:
+	In analyze_raw_data.py, line 153 "self.create_hit_table = False" set to True in host/pybar/analysis
+
+//ENABLING THE CLUSTER TABLES AND HISTOGRAMS: // testing this out -> nvm, doesnt help
+//	In the same file as above:
+//	self.create_cluster_hit_table = True # was False
+//  self.create_cluster_table = True # was False
+//  self.create_cluster_size_hist = True # was False
+//  self.create_cluster_tot_hist = True # was False 
+
+IGNORE RX 8B10B ERRORS:
+	In the particular scan that you want (ex: stop mode):
+	self.fifo_readout.start(reset_sram_fifo=False, clear_buffer=True, callback=self.handle_data, errback=None, no_data_timeout=self.no_data_timeout) # was errback=self.handle_err; ignore RX 8b10b errors
+
+CONFIGURATIONS:
+	In "configuration.yaml":
+	fe_flavor : fei4b # was fei4a
+	module_id : module_202_new # was module_test
+
+	In "tune_fei4.py":
+	target_threshold : 60,  # target threshold # was 50; units of PlsrDAC (1 PlsrDAC = ~50 e)
+    target_charge : 375,  # target charge # was 280; units of PlsrDAC
+    target_tot : 9,  # target ToT # was 5; ToT code units
+
+    In "scan_analog.py":
+    scan_parameters : {'PlsrDAC': 375} # was 280
+
+    Note: "target_threshold" sets the amount of charge needed for a pixel to sense a hit. "target_charge" and "target_tot" set how much charge will correspond to how much tot.
+
+HOMEMADE SCRIPTS FOLDER:
+	Created homemade_scripts folder in the main pybar software folder. Copied the contents from tag 2.0.2.
+
+RUN_EXTRA_INFO.TXT:
+	In module_202_new folder, I created run_extra_info.txt to store info about runs, such as source and GEM voltage, Pcp (pressure), and other parameters.
+
+EXT TRIGGER STOP MODE:
+	In "scan_ext_trigger_stop_mode.py":
+	"trigger_latency": 10,  # FE global register Trig_Lat. The lower the value the longer the hit data will be stored in data buffer
+    "trigger_delay": 180,  # delay between trigger and stop mode command
+    "bcid_window": 255,  # Number of consecurive time slices to be read, from 0 to 255
+
+    In "dut_configuration_mio.yaml" in pybar folder:
+    #Trigger
+    TLU:
+	    TRIGGER_MODE        : 0  # Selecting trigger mode: Use trigger inputs/trigger select (0), TLU no handshake (1), TLU simple handshake (2), TLU data handshake (3)
+	    TRIGGER_SELECT      : 1  # Selecting trigger input: RX2 (TDC loop-through) (4), RX0 (2), MonHit/HitOR from Adapter Card (1), disabled (0)
+	    TRIGGER_INVERT      : 0  # Inverting trigger invert
+	    TRIGGER_VETO_SELECT : 255  # Selecting trigger veto: RX1 (2), RX FIFO full (1), disabled (0)

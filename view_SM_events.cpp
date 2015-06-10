@@ -8,7 +8,7 @@
 
 #include "viewer_helper_functions.cpp"
 
-void view_numHits_v_bcidInEvent() {
+void view_SM_events() {
 	/*** Used only when input file is an _interpreted_raw.root file (called raw file). Displays a 1D histogram of Count (hits) vs BCID in event (BCIDs). 
 
 	Can choose which h5 event to start at. (find "CHOOSE THIS" in this script)
@@ -37,14 +37,13 @@ void view_numHits_v_bcidInEvent() {
 	TTreeReaderValue<Double_t> z(*reader, "z");
 
 	// Initialize the histogram
-	TCanvas *c1 = new TCanvas("c1","Number Count of BCID in Event");
-	TH1F *h = new TH1F("h", "Number Count of BCID in Event", 255, 0, 255);
-	h->GetXaxis()->SetTitle("BCID in Event (BCIDs)");
-	h->GetYaxis()->SetTitle("Count (hits)");
+	TCanvas *c1 = new TCanvas("c1","Occupancy for Specified SM Event");
+	TH2F *h = new TH2F("h", "Occupancy for Specified SM Event", 80, 0, 20, 336, -16.8, 0);
+	h->GetXaxis()->SetTitle("x (mm)");
+	h->GetYaxis()->SetTitle("y (mm)");
 	//h->SetMarkerStyle(7);
 
 	// Variables used in main loop
-	
 	bool endOfReader = false; // if reached end of the reader
 	bool quit = false; // if pressed q
 	int setReaderToEventNum_output; // returned value from calling that function
@@ -79,8 +78,9 @@ void view_numHits_v_bcidInEvent() {
 			// Fill and draw histogram
 			h->Reset();
 			for (int i = 0; i < entryRange[1] - entryRange[0]; i++) {
-				currBCIDInEvent = getBCIDInEvent(*event_number, *relative_BCID);
-				h->Fill(currBCIDInEvent);
+				currBCIDInEvent = getSMRelBCID(*event_number, *relative_BCID);
+				//
+				h->Fill(*x, *y);
 				endOfReader = !(reader->Next());
 			}
 		}

@@ -63,8 +63,9 @@ int getSMEventNum(Long64_t event_number, UChar_t relative_BCID) {
 	return (int) (event_number / 16);
 }
 
-int getBCIDInEvent(Long64_t event_number, UChar_t relative_BCID) {
-	/* Returns the current BCID number of the SM-event that this hit is in. (0 - 255)
+int getSMRelBCID(Long64_t event_number, UChar_t relative_BCID) {
+	/* Returns the BCID number of the SM-event that this hit is in. (0 - 255)
+	We call it the SM-RelBCID of the hit (stop mode - relative BCID), but it used to be called BCIDInEvent (so you may see it as BCIDInEvent in older code).
 	
 	Note: h5 event = events are differentiated by event_number in h5 file) that marks the start of the SM event (events are differentiated by groups of 16 event_numbers
 	*/
