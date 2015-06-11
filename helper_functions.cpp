@@ -71,6 +71,7 @@ int getSMRelBCID(Long64_t event_number, UChar_t relative_BCID) {
 	*/
 	
 	return (event_number - ((int)(event_number/16)) * 16) * 16 + relative_BCID; // Range: 0 - 255
+
 }
 
 vector<int> getEntryRangeWithEventNumRange(TTreeReader *reader, int startEventNum, int endEventNum) {
@@ -122,7 +123,7 @@ vector<int> getEntryRangeWithEventNumRange(TTreeReader *reader, int startEventNu
 	return entryRange;
 }
 
-void viewer_helper_functions() { // this function is for testing purposes
+/*void viewer_helper_functions() { // this function is for testing purposes
 	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/54_module_202_new_stop_mode_ext_trigger_scan_interpreted_raw.root");
 
 	TTreeReader *reader = new TTreeReader("Table", f);
@@ -133,4 +134,4 @@ void viewer_helper_functions() { // this function is for testing purposes
 	cout << arr[0] << "   " << arr[1] << "\n";
 	cout << reader->GetCurrentEntry();
 
-}
+}*/

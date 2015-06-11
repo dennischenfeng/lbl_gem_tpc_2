@@ -282,7 +282,9 @@ def convert_two_hit_tables(input_filename, output_filename, h5_file_num):
             myExtraCalc.h5_file_num = h5_file_num
             myExtraCalc.x = (int(hit['column']) - 1) * 0.25 + 0.001 # + 0.001 is to get rid of any tiny roundoff errors due to using a doubles
             myExtraCalc.y = - (int(hit['row']) - 1) * 0.05 + 0.001 # 
-            myExtraCalc.z = 12.5
+            
+            smRelBCID = (int(hit['event_number']) - (int(hit['event_number'])/16) * 16) * 16 + int(hit['relative_BCID']) # Range: 0 - 255
+            myExtraCalc.z = (smRelBCID * 0.16) + 0.001 # Drift speed: 0.16 mm per BCID
 
             # Fill the tree that includes data from both trees. 
             tree.Fill()
@@ -340,7 +342,7 @@ def convert_hit_table_fast(input_filename, output_filename):
 
 if __name__ == "__main__":
     path_to_folder = '/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new'
-    h5_file_num = 47
+    h5_file_num = 46
 
     # chose this parameter as big as possible to increase speed, but not too 
     # big otherwise program crashed:

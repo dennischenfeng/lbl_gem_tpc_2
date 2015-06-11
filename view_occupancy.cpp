@@ -30,8 +30,8 @@ void view_occupancy() {
 	TTreeReaderValue<Double_t> z(reader, "z");
 
 	// Initialize the histogram
-	TCanvas *c1 = new TCanvas("c1","Histogram");
-	TH2F *h = new TH2F("h", "Occupancy", 80, 0, 20, 336, -16.8, 0);
+	TCanvas *c1 = new TCanvas("c1","Occupancy Plot of All Events");
+	TH2F *h = new TH2F("h", "Occupancy Plot of All Events", 80, 0, 20, 336, -16.8, 0);
 	h->GetXaxis()->SetTitle("x (mm)");
 	h->GetYaxis()->SetTitle("y (mm)");
 	//h->SetMarkerStyle(7);

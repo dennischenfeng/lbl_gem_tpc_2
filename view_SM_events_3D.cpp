@@ -6,13 +6,13 @@
 #include "TCanvas.h"
 #include "TH2F.h"
 
-#include "viewer_helper_functions.cpp"
+#include "helper_functions.cpp"
 
-void view_SM_events() {
-	/*** Used only when input file is an _interpreted_raw.root file (called raw file). Displays a 1D histogram of Count (hits) vs BCID in event (BCIDs). 
+void view_SM_events_3D() {
+	/*** Displays an 3D occupancy plot for each SM Event. (stop mode event)
 
-	Can choose which h5 event to start at. (find "CHOOSE THIS" in this script)
-	
+	Can choose which SM event to start at. (find "CHOOSE THIS" in this script)
+	Input file must be a raw file (_interpreted.root file).
 	***/
 	gROOT->Reset(); 
 
@@ -37,10 +37,11 @@ void view_SM_events() {
 	TTreeReaderValue<Double_t> z(*reader, "z");
 
 	// Initialize the histogram
-	TCanvas *c1 = new TCanvas("c1","Occupancy for Specified SM Event");
-	TH2F *h = new TH2F("h", "Occupancy for Specified SM Event", 80, 0, 20, 336, -16.8, 0);
+	TCanvas *c1 = new TCanvas("c1","3D Occupancy for Specified SM Event");
+	TH3F *h = new TH3F("h", "3D Occupancy for Specified SM Event", 80, 0, 20, 336, -16.8, 0, 256, 0, 40.96);
 	h->GetXaxis()->SetTitle("x (mm)");
 	h->GetYaxis()->SetTitle("y (mm)");
+	h->GetZaxis()->SetTitle("z (mm)");
 	//h->SetMarkerStyle(7);
 
 	// Variables used in main loop
@@ -49,6 +50,7 @@ void view_SM_events() {
 	int setReaderToEventNum_output; // returned value from calling that function
 	int currSMEventNum = 0; // the current SM-event CHOOSE THIS to start at desired SM event number
 	vector<int> entryRange (2); // 2 element vector: 1st is startEntryNum, 2nd is endEntryNum; see getEntryRangeWithEventNumRange() method in viewer_helper_functions.cpp for more details 
+	string histTitle = "";
 	int currBCIDInEvent; // current BCID of the SM-event (0 - 255)
 	string inString;
 
@@ -58,6 +60,7 @@ void view_SM_events() {
 		setReaderToEventNum_output = 0;
 		entryRange[0] = 0;
 		entryRange[1] = 0;
+		histTitle = "3D Occupancy for SM Event ";
 		currBCIDInEvent = 0;
 		inString = "";
 
@@ -77,10 +80,13 @@ void view_SM_events() {
 
 			// Fill and draw histogram
 			h->Reset();
+			histTitle.append(to_string(currSMEventNum));
+			h->SetTitle(histTitle.c_str());
+			c1->SetTitle(histTitle.c_str());
 			for (int i = 0; i < entryRange[1] - entryRange[0]; i++) {
 				currBCIDInEvent = getSMRelBCID(*event_number, *relative_BCID);
 				//
-				h->Fill(*x, *y);
+				h->Fill(*x, *y, *z);
 				endOfReader = !(reader->Next());
 			}
 		}
@@ -88,7 +94,8 @@ void view_SM_events() {
 		// Draw histogram, get input, and set currSMEventNum properly (according to input)
 		if (!endOfReader && h->GetEntries() != 0) {
 			cout << "Current SM Event Number: " << currSMEventNum << "\n";
-			h->Draw("COLZ");
+			//h->SetMarkerStyle(7);
+			h->Draw("LEGO");
 			c1->Update();
 
 			bool inStringValid = false;

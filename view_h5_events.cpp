@@ -6,7 +6,7 @@
 #include "TCanvas.h"
 #include "TH2F.h"
 
-#include "viewer_helper_functions.cpp"
+#include "helper_functions.cpp"
 
 void view_h5_events() {
 	/*** Used only when input file is an _interpreted_raw.root file (called raw file). Opens a window that allows you to view h5-events one by one. "Enter" to go to next event, 'b' for previous event, <number> for specific event num, or 'q' to quit.

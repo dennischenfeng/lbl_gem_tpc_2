@@ -8,11 +8,11 @@
 
 #include "helper_functions.cpp"
 
-void view_numHits_v_SMRelBCID() {
-	/*** Used only when input file is an _interpreted_raw.root file (called raw file). Displays a 1D histogram of Count (hits) vs SM-RelBCID (BCIDs). 
+void view_SM_events_2D() {
+	/*** Displays an 2D occupancy plot for each SM Event. (stop mode event) 
 
-	Can choose which h5 event to start at. (find "CHOOSE THIS" in this script)
-	
+	Can choose which SM event to start at. (find "CHOOSE THIS" in this script)
+	Input file must be a raw file (_interpreted.root file).
 	***/
 	gROOT->Reset(); 
 
@@ -37,14 +37,13 @@ void view_numHits_v_SMRelBCID() {
 	TTreeReaderValue<Double_t> z(*reader, "z");
 
 	// Initialize the histogram
-	TCanvas *c1 = new TCanvas("c1","Number Count of BCID in SM Event");
-	TH1F *h = new TH1F("h", "Number Count of BCID in SM Event", 255, 0, 255);
-	h->GetXaxis()->SetTitle("Stop Mode Relative BCID (BCIDs)");
-	h->GetYaxis()->SetTitle("Count (hits)");
+	TCanvas *c1 = new TCanvas("c1","Occupancy for Specified SM Event");
+	TH2F *h = new TH2F("h", "Occupancy for Specified SM Event", 80, 0, 20, 336, -16.8, 0);
+	h->GetXaxis()->SetTitle("x (mm)");
+	h->GetYaxis()->SetTitle("y (mm)");
 	//h->SetMarkerStyle(7);
 
 	// Variables used in main loop
-	
 	bool endOfReader = false; // if reached end of the reader
 	bool quit = false; // if pressed q
 	int setReaderToEventNum_output; // returned value from calling that function
@@ -60,7 +59,7 @@ void view_numHits_v_SMRelBCID() {
 		setReaderToEventNum_output = 0;
 		entryRange[0] = 0;
 		entryRange[1] = 0;
-		histTitle = "Number Count of BCID in SM Event ";
+		histTitle = "Occupancy for SM Event ";
 		currBCIDInEvent = 0;
 		inString = "";
 
@@ -86,9 +85,10 @@ void view_numHits_v_SMRelBCID() {
 			for (int i = 0; i < entryRange[1] - entryRange[0]; i++) {
 				currBCIDInEvent = getSMRelBCID(*event_number, *relative_BCID);
 				//
-				h->Fill(currBCIDInEvent);
+				h->Fill(*x, *y, currBCIDInEvent + 1);
 				endOfReader = !(reader->Next());
 			}
+			//h->Fill(0.1, -0.1, 256); // ad hoc way of setting the range of the color palette to be 1-256.
 		}
 
 		// Draw histogram, get input, and set currSMEventNum properly (according to input)
