@@ -37,11 +37,12 @@ void view_SM_events_3D() {
 	TTreeReaderValue<Double_t> z(*reader, "z");
 
 	// Initialize the histogram
-	TCanvas *c1 = new TCanvas("c1","3D Occupancy for Specified SM Event");
+	TCanvas *c1 = new TCanvas("c1","3D Occupancy for Specified SM Event", 1000, 10, 900, 550);
 	TH3F *h = new TH3F("h", "3D Occupancy for Specified SM Event", 80, 0, 20, 336, -16.8, 0, 256, 0, 40.96);
 	h->GetXaxis()->SetTitle("x (mm)");
 	h->GetYaxis()->SetTitle("y (mm)");
 	h->GetZaxis()->SetTitle("z (mm)");
+	c1->SetRightMargin(0.25);
 	//h->SetMarkerStyle(7);
 
 	// Variables used in main loop
