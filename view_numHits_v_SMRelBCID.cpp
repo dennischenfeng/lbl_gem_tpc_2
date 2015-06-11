@@ -37,10 +37,11 @@ void view_numHits_v_SMRelBCID() {
 	TTreeReaderValue<Double_t> z(*reader, "z");
 
 	// Initialize the histogram
-	TCanvas *c1 = new TCanvas("c1","Number Count of BCID in SM Event");
+	TCanvas *c1 = new TCanvas("c1","Number Count of BCID in SM Event", 1000, 10, 900, 550);
 	TH1F *h = new TH1F("h", "Number Count of BCID in SM Event", 255, 0, 255);
 	h->GetXaxis()->SetTitle("Stop Mode Relative BCID (BCIDs)");
 	h->GetYaxis()->SetTitle("Count (hits)");
+	c1->SetRightMargin(0.25);
 	//h->SetMarkerStyle(7);
 
 	// Variables used in main loop
