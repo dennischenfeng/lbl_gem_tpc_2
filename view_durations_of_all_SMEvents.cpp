@@ -36,10 +36,11 @@ void view_durations_of_all_SMEvents() {
 	TTreeReaderValue<Double_t> z(reader, "z");
 
 	// Initialize the histogram
-	TCanvas *c1 = new TCanvas("c1","Durations of All SM Events");
+	TCanvas *c1 = new TCanvas("c1", "Durations of All SM Events", 1000, 10, 900, 550);
 	TH1F *h = new TH1F("h", "Durations of All SM Events", 60, 0, 60);
 	h->GetXaxis()->SetTitle("Duration of SM event (BCIDs)");
 	h->GetYaxis()->SetTitle("Count (SM events)");
+	c1->SetRightMargin(0.25);
 	//h->SetMarkerStyle(7);
 
 	// Variables used in loop
