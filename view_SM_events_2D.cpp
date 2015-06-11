@@ -37,10 +37,14 @@ void view_SM_events_2D() {
 	TTreeReaderValue<Double_t> z(*reader, "z");
 
 	// Initialize the histogram
-	TCanvas *c1 = new TCanvas("c1","Occupancy for Specified SM Event");
+	TCanvas *c1 = new TCanvas("c1","Occupancy for Specified SM Event", 1000, 10, 900, 550);
 	TH2F *h = new TH2F("h", "Occupancy for Specified SM Event", 80, 0, 20, 336, -16.8, 0);
 	h->GetXaxis()->SetTitle("x (mm)");
 	h->GetYaxis()->SetTitle("y (mm)");
+	c1->SetRightMargin(0.35);
+	h->GetZaxis()->SetTitle("SM Relative BCID (BCIDs)");
+	//h->GetZaxis()->SetLabelSize(3);
+
 	//h->SetMarkerStyle(7);
 
 	// Variables used in main loop
