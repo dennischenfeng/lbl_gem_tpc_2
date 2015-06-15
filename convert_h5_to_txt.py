@@ -4,11 +4,12 @@ values. Uses the hit table from the _interpreted.h5
 file of the desired scan to convert. 
 
 The data contains: (column num, root type descriptor, root type)
-1. hit entry num
-2. h5_file_num, i, UInt_t
-3. event_number, L, Long64_t (same numbers as indicated by h5 file)
-4. tot, b, UChar_t
-5. relative_BCID, b, UChar_t
+0. hit_entry_index
+1. h5_file_num, i, UInt_t
+2. event_number, L, Long64_t (same numbers as indicated by h5 file)
+3. tot, b, UChar_t
+4. relative_BCID, b, UChar_t
+5. SM_event_num
 6. x, D, Double_t (in mm)
 7. y, D, Double_t 
 8. z, D, Double_t
@@ -101,13 +102,13 @@ def convert_two_hit_tables(input_filename, output_filename, h5_file_num):
 
 if __name__ == "__main__":
     path_to_folder = '/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new'
+    name_tail = '_module_202_new_stop_mode_ext_trigger_scan_interpreted'
+
     h5_file_num = 46
 
     # chose this parameter as big as possible to increase speed, but not too 
     # big otherwise program crashed:
     chunk_size = 50000  
     
-    convert_two_hit_tables(path_to_folder + '/' + str(h5_file_num) + '_module_202_new_stop_mode_ext_trigger_scan_interpreted.h5', \
-        path_to_folder + '/' + str(h5_file_num) + '_module_202_new_stop_mode_ext_trigger_scan_interpreted.txt', \
-        h5_file_num)
+    convert_two_hit_tables(path_to_folder + '/' + str(h5_file_num) + name_tail +'.h5', path_to_folder + '/' + str(h5_file_num) + name_tail + 'txt', h5_file_num)
     
