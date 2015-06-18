@@ -8,7 +8,7 @@
 
 #include "helper_functions.cpp"
 
-void view_durations_of_all_SMEvents() {
+void view_numSMEvents_vs_duration() {
 	/*** Used only when input file is an _interpreted_raw.root file (called raw file). Displays a 1D histogram of Count (SM events) vs Duration of SM event (BCIDs). There's 1 histogram for the entire raw file (many SM events). 
 
 	Original purpose: Record the average duration of SM events, and see if it changes when I modify the clock speed.

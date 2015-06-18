@@ -7,7 +7,7 @@ void view_root_tree() {
 	gROOT->Reset(); 
 
 	//--Setting up file, treereader, histogram
-	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/54_module_202_new_stop_mode_ext_trigger_scan_interpreted_raw.root");
+	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/46_module_202_new_stop_mode_ext_trigger_scan_interpreted_raw.root");
 
 	if (f == 0) { // if we cannot open the file, print an error message and return immediately
 		printf("Error: cannot open the root file!\n");

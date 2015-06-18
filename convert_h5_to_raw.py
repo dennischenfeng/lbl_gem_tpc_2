@@ -9,9 +9,10 @@ The TTree contains: (name of branch, root type descriptor, root type)
 2. event_number, L, Long64_t (same numbers as indicated by h5 file)
 3. tot, b, UChar_t
 4. relative_BCID, b, UChar_t
-5. x, D, Double_t (in mm)
-6. y, D, Double_t 
-7. z, D, Double_t
+5. SM_event_num, L, Long64_t
+6. x, D, Double_t (in mm)
+7. y, D, Double_t 
+8. z, D, Double_t
 
 Depending on whether you want to convert self_trigger scans or ext_trigger_stop_mode scans, you may need to choose which init_hit_struct() to use.
 
@@ -89,6 +90,7 @@ def init_extracalc_struct():
     gROOT.ProcessLine(
         "struct ExtraCalcInfo{\
         UInt_t h5_file_num;\
+        Long64_t SM_event_num;\
         Double_t x;\
         Double_t y;\
         Double_t z;\
@@ -177,6 +179,7 @@ def init_tree_from_table(hit_table, meta_table, chunk_size=1, hit_tree_entry=Non
     tree.Branch('event_number', 'NULL' if hit_tree_entry is None else AddressOf(hit_tree_entry, 'event_number'), 'event_number' + '[n_entries]/' + 'L' if chunk_size > 1 else 'event_number' + '/' + 'L')
     tree.Branch('tot', 'NULL' if hit_tree_entry is None else AddressOf(hit_tree_entry, 'tot'), 'tot' + '[n_entries]/' + 'b' if chunk_size > 1 else 'tot' + '/' + 'b')
     tree.Branch('relative_BCID', 'NULL' if hit_tree_entry is None else AddressOf(hit_tree_entry, 'relative_BCID'), 'relative_BCID' + '[n_entries]/' + 'b' if chunk_size > 1 else 'relative_BCID' + '/' + 'b')
+    tree.Branch('SM_event_num', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'SM_event_num'), 'SM_event_num' + '[n_entries]/' + 'L' if chunk_size > 1 else 'SM_event_num' + '/' + 'L')
     tree.Branch('x', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'x'), 'x' + '[n_entries]/' + 'D' if chunk_size > 1 else 'x' + '/' + 'D')
     tree.Branch('y', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'y'), 'y' + '[n_entries]/' + 'D' if chunk_size > 1 else 'y' + '/' + 'D')
     tree.Branch('z', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'z'), 'z' + '[n_entries]/' + 'D' if chunk_size > 1 else 'z' + '/' + 'D')
@@ -280,6 +283,7 @@ def convert_two_hit_tables(input_filename, output_filename, h5_file_num):
             '''
 
             myExtraCalc.h5_file_num = h5_file_num
+            myExtraCalc.SM_event_num = int(hit['event_number']) / 16
             myExtraCalc.x = (int(hit['column']) - 1) * 0.25 + 0.001 # + 0.001 is to get rid of any tiny roundoff errors due to using a doubles
             myExtraCalc.y = - (int(hit['row']) - 1) * 0.05 + 0.001 # 
             

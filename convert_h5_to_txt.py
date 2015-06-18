@@ -69,18 +69,20 @@ def convert_two_hit_tables(input_filename, output_filename, h5_file_num):
                 service_record = int(hit['service_record'])
                 event_status = int(hit['event_status'])
 
+                SM_event_num = event_number / 16
                 x = (int(hit['column']) - 1) * 0.25 + 0.001 # + 0.001 is to get rid of any tiny roundoff errors due to using a doubles
                 y = - (int(hit['row']) - 1) * 0.05 + 0.001 # 
                 
-                smRelBCID = (int(hit['event_number']) - (int(hit['event_number'])/16) * 16) * 16 + int(hit['relative_BCID']) # Range: 0 - 255
-                z = (smRelBCID * 0.16) + 0.001 # Drift speed: 0.16 mm per BCID
+                SM_rel_BCID = (int(hit['event_number']) - (int(hit['event_number'])/16) * 16) * 16 + int(hit['relative_BCID']) # Range: 0 - 255
+                z = (SM_rel_BCID * 0.16) + 0.001 # Drift speed: 0.16 mm per BCID
                 
                 '''
-                1. hit entry num
-                2. h5_file_num, i, UInt_t
-                3. event_number, L, Long64_t (same numbers as indicated by h5 file)
-                4. tot, b, UChar_t
-                5. relative_BCID, b, UChar_t
+                0. hit entry index
+                1. h5_file_num, i, UInt_t
+                2. event_number, L, Long64_t (same numbers as indicated by h5 file)
+                3. tot, b, UChar_t
+                4. relative_BCID, b, UChar_t
+                5. SM_event_num
                 6. x, D, Double_t (in mm)
                 7. y, D, Double_t 
                 8. z, D, Double_t
@@ -91,6 +93,7 @@ def convert_two_hit_tables(input_filename, output_filename, h5_file_num):
                     str(event_number) + ', ' + \
                     str(tot) + ', ' + \
                     str(relative_BCID) + ', ' + \
+                    str(SM_event_num) + ', ' + \
                     str(x) + ', ' + \
                     str(y) + ', ' + \
                     str(z) + '\n')
@@ -110,5 +113,5 @@ if __name__ == "__main__":
     # big otherwise program crashed:
     chunk_size = 50000  
     
-    convert_two_hit_tables(path_to_folder + '/' + str(h5_file_num) + name_tail +'.h5', path_to_folder + '/' + str(h5_file_num) + name_tail + 'txt', h5_file_num)
+    convert_two_hit_tables(path_to_folder + '/' + str(h5_file_num) + name_tail +'.h5', path_to_folder + '/' + str(h5_file_num) + name_tail + '.txt', h5_file_num)
     

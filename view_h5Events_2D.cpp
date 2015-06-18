@@ -8,7 +8,7 @@
 
 #include "helper_functions.cpp"
 
-void view_h5_events() {
+void view_h5Events_2D() {
 	/*** Used only when input file is an _interpreted_raw.root file (called raw file). Opens a window that allows you to view h5-events one by one. "Enter" to go to next event, 'b' for previous event, <number> for specific event num, or 'q' to quit.
 	You can specify which event number to start at. Ctrl-F "CHANGE THIS" in this script to find the line.
 

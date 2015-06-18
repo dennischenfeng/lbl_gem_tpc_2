@@ -8,7 +8,7 @@
 
 #include "helper_functions.cpp"
 
-void view_numHits_v_SMRelBCID() {
+void view_numHits_vs_SMRelBCID() {
 	/*** Used only when input file is an _interpreted_raw.root file (called raw file). Displays a 1D histogram of Count (hits) vs SM-RelBCID (BCIDs). 
 
 	Can choose which h5 event to start at. (find "CHOOSE THIS" in this script)

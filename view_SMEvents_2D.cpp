@@ -8,8 +8,8 @@
 
 #include "helper_functions.cpp"
 
-void view_SM_events_3D() {
-	/*** Displays an 3D occupancy plot for each SM Event. (stop mode event)
+void view_SMEvents_2D() {
+	/*** Displays an 2D occupancy plot for each SM Event. (stop mode event) 
 
 	Can choose which SM event to start at. (find "CHOOSE THIS" in this script)
 	Input file must be a raw file (_interpreted.root file).
@@ -37,14 +37,14 @@ void view_SM_events_3D() {
 	TTreeReaderValue<Double_t> z(*reader, "z");
 
 	// Initialize the histogram
-	gStyle->SetCanvasPreferGL(true); // better for drawing 3d
-	TCanvas *c1 = new TCanvas("c1","3D Occupancy for Specified SM Event", 1000, 10, 900, 550);
-	TH3F *h = new TH3F("h", "3D Occupancy for Specified SM Event", 80, 0, 20, 336, -16.8, 0, 256, 0, 40.96);
+	TCanvas *c1 = new TCanvas("c1","Occupancy for Specified SM Event", 1000, 10, 900, 550);
+	TH2F *h = new TH2F("h", "Occupancy for Specified SM Event", 80, 0, 20, 336, -16.8, 0);
 	h->GetXaxis()->SetTitle("x (mm)");
 	h->GetYaxis()->SetTitle("y (mm)");
-	h->GetZaxis()->SetTitle("z (mm)");
-	c1->SetRightMargin(0.25);
-	
+	c1->SetRightMargin(0.35);
+	h->GetZaxis()->SetTitle("SM Relative BCID (BCIDs)");
+	//h->GetZaxis()->SetLabelSize(3);
+
 	//h->SetMarkerStyle(7);
 
 	// Variables used in main loop
@@ -63,7 +63,7 @@ void view_SM_events_3D() {
 		setReaderToEventNum_output = 0;
 		entryRange[0] = 0;
 		entryRange[1] = 0;
-		histTitle = "3D Occupancy for SM Event ";
+		histTitle = "Occupancy for SM Event ";
 		currBCIDInEvent = 0;
 		inString = "";
 
@@ -89,16 +89,16 @@ void view_SM_events_3D() {
 			for (int i = 0; i < entryRange[1] - entryRange[0]; i++) {
 				currBCIDInEvent = getSMRelBCID(*event_number, *relative_BCID);
 				//
-				h->Fill(*x, *y, *z);
+				h->Fill(*x, *y, currBCIDInEvent + 1);
 				endOfReader = !(reader->Next());
 			}
+			//h->Fill(0.1, -0.1, 256); // ad hoc way of setting the range of the color palette to be 1-256.
 		}
 
 		// Draw histogram, get input, and set currSMEventNum properly (according to input)
 		if (!endOfReader && h->GetEntries() != 0) {
 			cout << "Current SM Event Number: " << currSMEventNum << "\n";
-			//h->SetMarkerStyle(7);
-			h->Draw("GLCOL");
+			h->Draw("COLZ");
 			c1->Update();
 
 			bool inStringValid = false;
