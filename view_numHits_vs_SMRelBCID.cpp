@@ -17,7 +17,7 @@ void view_numHits_vs_SMRelBCID() {
 	gROOT->Reset(); 
 
 	// Setting up file, treereader, histogram
-	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/46_module_202_new_stop_mode_ext_trigger_scan_interpreted_raw.root");
+	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/89_module_202_new_stop_mode_ext_trigger_scan_interpreted_raw.root");
 
 	//TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2/host/pybar/module_test/745_module_test_stop_mode_ext_trigger_scan_interpreted_raw.root");
 

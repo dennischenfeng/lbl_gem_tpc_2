@@ -8,7 +8,7 @@
 
 #include "helper_functions.cpp"
 
-void view_SMEvents_3D() {
+void view_SMEvents_3D_TH1F() {
 	/*** Displays an 3D occupancy plot for each SM Event. (stop mode event)
 
 	Can choose which SM event to start at. (find "CHOOSE THIS" in this script)

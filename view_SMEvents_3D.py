@@ -5,7 +5,7 @@ from mpl_toolkits.mplot3d import Axes3D
 """ This function displays the 3D occupancy of the specified SM event. """ 
 
 # CHOOSE THIS
-SM_event_num = 61
+SM_event_num = 14
 
 
 # Helper function

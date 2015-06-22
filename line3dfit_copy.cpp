@@ -16,7 +16,7 @@
 #include <Math/Vector3D.h>
 #include <Fit/Fitter.h>
 
-using namespace ROOT::Math;
+// using namespace ROOT::Math;
 
 
 // define the parameteric line equation
@@ -33,10 +33,10 @@ void line(double t, const double *p, double &x, double &y, double &z) {
 double distance2(double x,double y,double z, const double *p) {
    // distance line point is D= | (xp-x0) cross  ux |
    // where ux is direction of line and x0 is a point in the line (like t = 0)
-   XYZVector xp(x,y,z);
-   XYZVector x0(p[0], p[2], 0. );
-   XYZVector x1(p[0] + p[1], p[2] + p[3], 1. );
-   XYZVector u = (x1-x0).Unit();
+   ROOT::Math::XYZVector xp(x,y,z);
+   ROOT::Math::XYZVector x0(p[0], p[2], 0. );
+   ROOT::Math::XYZVector x1(p[0] + p[1], p[2] + p[3], 1. );
+   ROOT::Math::XYZVector u = (x1-x0).Unit();
    double d2 = ((xp-x0).Cross(u)) .Mag2();
    return d2;
 }
@@ -119,11 +119,32 @@ Int_t line3dfit_copy()
    // gr->SetPoint(4, 9, 8, 7);
    // gr->SetPoint(5, 5, 5, 5);
 
-   gr->SetPoint(0, 3, 4, 4);
-   gr->SetPoint(2, 4, 4, 4);
-   gr->SetPoint(3, 5, 2, 5);
-   gr->SetPoint(4, 6, 6, 6);
-   gr->SetPoint(5, 8, 8, 8);
+   gr->SetPoint(0, 19, -4.25, 1.92);
+   gr->SetPoint(1, 19, -4.30, 1.92);
+   gr->SetPoint(2, 19, -4.35, 1.92);
+   gr->SetPoint(3, 19, -4.40, 1.92);
+   gr->SetPoint(4, 19, -4.45, 1.92);
+   gr->SetPoint(5, 19, -4.50, 1.92);
+   gr->SetPoint(6, 19, -4.55, 1.92);
+   gr->SetPoint(7, 19, -4.60, 1.92);
+   gr->SetPoint(8, 18.75, -4.30, 1.92);
+   gr->SetPoint(9, 18.75, -4.35, 1.92);
+   gr->SetPoint(10, 18.75, -4.40, 1.92);
+   gr->SetPoint(11, 18.75, -4.45, 1.92);
+   gr->SetPoint(12, 18.75, -4.50, 1.92);
+   gr->SetPoint(13, 18.75, -4.55, 1.92);
+   gr->SetPoint(14, 19, -4.20, 2.08);
+   gr->SetPoint(15, 19, -4.65, 2.08);
+   gr->SetPoint(16, 19, -4.70, 2.08);
+   gr->SetPoint(17, 18.75, -4.25, 2.08);
+   gr->SetPoint(18, 18.75, -4.60, 2.08);
+   // gr->SetPoint(19, 19.001, -4.151, 2.241);
+   // gr->SetPoint(20, 18.751, -4.201, 2.241);
+   gr->SetPoint(19, 19., -4.15, 2.24);
+   gr->SetPoint(20, 18.5723, -4.20, 2.24);
+
+   // gr->SetMarkerStyle(8);
+   // gr->Draw("p");
    
    // gr->Draw("p0");
    // TFitResultPtr fit = gr->Fit("pol1", "WS");
@@ -165,9 +186,8 @@ Int_t line3dfit_copy()
    const ROOT::Fit::FitResult & result = fitter.Result();
 
    std::cout << "Total final distance square " << result.MinFcnValue() << std::endl;
-   result.Print(std::cout);
+   // result.Print(std::cout); // @@@ suppress output
 
-   gr->Draw("p0");
 
    // get fit parameters
    const double * parFit = result.GetParams();
