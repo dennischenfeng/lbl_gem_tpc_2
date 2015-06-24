@@ -7,12 +7,12 @@
 #include "TH2F.h"
 
 void view_occupancy() {
-	/*** Used only when input file is an _interpreted_raw.root file (called raw file). Displays a 1D histogram of BCIDs per SM event. 
+	/*** Used only when input file is an _interpreted_Hits.root file (called Hits file). Displays a 1D histogram of BCIDs per SM event. 
 	***/
 	gROOT->Reset(); 
 
 	//--Setting up file, treereader, histogram
-	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/44_module_202_new_stop_mode_ext_trigger_scan_interpreted_raw.root");
+	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/44_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root");
 
 	if (!f) { // if we cannot open the file, print an error message and return immediately
 		cout << "Error: cannot open the root file!\n";

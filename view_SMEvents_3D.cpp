@@ -9,41 +9,40 @@
 #include "helper_functions.cpp"
 
 void view_SMEvents_3D() {
-	/*** Displays an 3D occupancy plot for each SM Event (stop mode event). The h5_file_num chosen must have working raw and CRCalc files (_raw.root and _CRCalc.root files).
+	/*** Displays an 3D occupancy plot for each SM Event (stop mode event). The h5_file_num chosen must have working Hits and EventsCR files (_Hits.root and _EventsCR.root files).
 
 	Can choose which SM event to start at. (find "CHOOSE THIS" in this script)
-	Input file must be a raw file (_interpreted.root file).
 	***/
 	gROOT->Reset();
 
 	// Setting up files, treereaders, histograms
 	int h5_file_num_input = 101;
 
-	TFile *fileRaw = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(h5_file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_raw.root").c_str());
-	TFile *fileCRCalc = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(h5_file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_CRCalc.root").c_str());
+	TFile *fileHits = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(h5_file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root").c_str());
+	TFile *fileEventsCR = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(h5_file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_EventsCR.root").c_str());
 
-	TTreeReader *readerRaw = new TTreeReader("Table", fileRaw);
-	TTreeReaderValue<UInt_t> h5_file_num(*readerRaw, "h5_file_num");
-	TTreeReaderValue<Long64_t> event_number(*readerRaw, "event_number");
-	TTreeReaderValue<UChar_t> tot(*readerRaw, "tot");
-	TTreeReaderValue<UChar_t> relative_BCID(*readerRaw, "relative_BCID");
-	TTreeReaderValue<Long64_t> SM_event_num(*readerRaw, "SM_event_num");
-	TTreeReaderValue<Double_t> x(*readerRaw, "x");
-	TTreeReaderValue<Double_t> y(*readerRaw, "y");
-	TTreeReaderValue<Double_t> z(*readerRaw, "z");
+	TTreeReader *readerHits = new TTreeReader("Table", fileHits);
+	TTreeReaderValue<UInt_t> h5_file_num(*readerHits, "h5_file_num");
+	TTreeReaderValue<Long64_t> event_number(*readerHits, "event_number");
+	TTreeReaderValue<UChar_t> tot(*readerHits, "tot");
+	TTreeReaderValue<UChar_t> relative_BCID(*readerHits, "relative_BCID");
+	TTreeReaderValue<Long64_t> SM_event_num(*readerHits, "SM_event_num");
+	TTreeReaderValue<Double_t> x(*readerHits, "x");
+	TTreeReaderValue<Double_t> y(*readerHits, "y");
+	TTreeReaderValue<Double_t> z(*readerHits, "z");
 
-	TTreeReader *readerCRCalc = new TTreeReader("Table", fileCRCalc);
-	TTreeReaderValue<UInt_t> num_hits(*readerCRCalc, "num_hits");
-	TTreeReaderValue<UInt_t> sum_tots(*readerCRCalc, "sum_tots");
-	TTreeReaderValue<Double_t> mean_x(*readerCRCalc, "mean_x");
-	TTreeReaderValue<Double_t> mean_y(*readerCRCalc, "mean_y");
-	TTreeReaderValue<Double_t> mean_z(*readerCRCalc, "mean_z");
-	TTreeReaderValue<Double_t> line_fit_param0(*readerCRCalc, "line_fit_param0");
-	TTreeReaderValue<Double_t> line_fit_param1(*readerCRCalc, "line_fit_param1");
-	TTreeReaderValue<Double_t> line_fit_param2(*readerCRCalc, "line_fit_param2");
-	TTreeReaderValue<Double_t> line_fit_param3(*readerCRCalc, "line_fit_param3");
-	TTreeReaderValue<Double_t> sum_of_squares(*readerCRCalc, "sum_of_squares");
-	TTreeReaderValue<Double_t> fraction_inside_sphere(*readerCRCalc, "fraction_inside_sphere");
+	TTreeReader *readerEventsCR = new TTreeReader("Table", fileEventsCR);
+	TTreeReaderValue<UInt_t> num_hits(*readerEventsCR, "num_hits");
+	TTreeReaderValue<UInt_t> sum_tots(*readerEventsCR, "sum_tots");
+	TTreeReaderValue<Double_t> mean_x(*readerEventsCR, "mean_x");
+	TTreeReaderValue<Double_t> mean_y(*readerEventsCR, "mean_y");
+	TTreeReaderValue<Double_t> mean_z(*readerEventsCR, "mean_z");
+	TTreeReaderValue<Double_t> line_fit_param0(*readerEventsCR, "line_fit_param0");
+	TTreeReaderValue<Double_t> line_fit_param1(*readerEventsCR, "line_fit_param1");
+	TTreeReaderValue<Double_t> line_fit_param2(*readerEventsCR, "line_fit_param2");
+	TTreeReaderValue<Double_t> line_fit_param3(*readerEventsCR, "line_fit_param3");
+	TTreeReaderValue<Double_t> sum_of_squares(*readerEventsCR, "sum_of_squares");
+	TTreeReaderValue<Double_t> fraction_inside_sphere(*readerEventsCR, "fraction_inside_sphere");
 
 	// Initialize the canvas and graph
 	TCanvas *c1 = new TCanvas("c1","3D Occupancy for Specified SM Event", 1000, 10, 900, 550);
@@ -51,41 +50,41 @@ void view_SMEvents_3D() {
 	TGraph2D *graph = new TGraph2D();
 
 	// Variables used to loop the main loop
-	bool endOfReader = false; // if reached end of the readerRaw
+	bool endOfReader = false; // if reached end of the readerHits
 	bool quit = false; // if pressed q
 	int smEventNum = 1; // the current SM-event CHOOSE THIS to start at desired SM event number
 	
 	// Main Loop (loops for every smEventNum)
 	while (!endOfReader && !quit) {
 		// Variables used in this main loop
-		int startEntryNumRaw = 0; // for readerRaw
-		int endEntryNumRaw = 0;
-		int entryNumCRCalc = 0; // for readerCRCalc
+		int startEntryNum_Hits = 0; // for readerHits
+		int endEntryNum_Hits = 0;
+		int entryNum_EventsCR = 0; // for readerEventsCR
 		string histTitle = "3D Occupancy for SM Event ";
 		string inString = "";
 		bool lastEvent = false;
 
-		// Get startEntryNumRaw and endEntryNumRaw (for readerRaw)
-		startEntryNumRaw = getEntryNumWithSMEventNum(readerRaw, smEventNum);
-		endEntryNumRaw = getEntryNumWithSMEventNum(readerRaw, smEventNum + 1);
+		// Get startEntryNum_Hits and endEntryNum_Hits (for readerHits)
+		startEntryNum_Hits = getEntryNumWithSMEventNum(readerHits, smEventNum);
+		endEntryNum_Hits = getEntryNumWithSMEventNum(readerHits, smEventNum + 1);
 
-		if (startEntryNumRaw == -2) { // can't find the smEventNum
+		if (startEntryNum_Hits == -2) { // can't find the smEventNum
 			cout << "Error: There should not be any SM event numbers that are missing." << "\n";
-		} else if (startEntryNumRaw == -3) { 
+		} else if (startEntryNum_Hits == -3) { 
 			endOfReader = true;
 			break;
-		} else if (endEntryNumRaw == -3) { // assuming no SM event nums are skipped
-			endEntryNumRaw = readerRaw->GetEntries(false);
+		} else if (endEntryNum_Hits == -3) { // assuming no SM event nums are skipped
+			endEntryNum_Hits = readerHits->GetEntries(false);
 			lastEvent = true;
 		}
 
 		// Fill TGraph with points and set title and axes
 		graph = new TGraph2D(); // create a new TGraph to refresh
 
-		readerRaw->SetEntry(startEntryNumRaw);
-		for (int i = 0; i < endEntryNumRaw - startEntryNumRaw; i++) {
+		readerHits->SetEntry(startEntryNum_Hits);
+		for (int i = 0; i < endEntryNum_Hits - startEntryNum_Hits; i++) {
 			graph->SetPoint(i, (*x - 0.001), (*y + 0.001), (*z - 0.001));
-			endOfReader = !(readerRaw->Next());
+			endOfReader = !(readerHits->Next());
 		}
 
 		histTitle.append(to_string(smEventNum));
@@ -99,9 +98,9 @@ void view_SMEvents_3D() {
 		graph->GetZaxis()->SetRangeUser(0, 40.96);
 		c1->SetTitle(histTitle.c_str());
 
-		// Get entryNumCRCalc and setreader to that entry
-		entryNumCRCalc = getEntryNumWithSMEventNum(readerCRCalc, smEventNum);
-		readerCRCalc->SetEntry(entryNumCRCalc);
+		// Get entryNum_EventsCR and setreader to that entry
+		entryNum_EventsCR = getEntryNumWithSMEventNum(readerEventsCR, smEventNum);
+		readerEventsCR->SetEntry(entryNum_EventsCR);
 
 		// Display results, draw graph and line fit, only accept "good" events, get input
 		if (!endOfReader || lastEvent) {

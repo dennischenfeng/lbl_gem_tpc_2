@@ -231,8 +231,8 @@ struct SumDistance2 {
 
 
 
-void helper_functions() { // this function is for testing purposes
-	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/46_module_202_new_stop_mode_ext_trigger_scan_interpreted_raw.root");
+/*void helper_functions() { // this function is for testing purposes
+	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/46_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root");
 
 	TTreeReader *reader = new TTreeReader("Table", f);
 
@@ -245,4 +245,4 @@ void helper_functions() { // this function is for testing purposes
 
 	cout << startEntryNum << "   " << endEntryNum << "\n";
 	cout << reader->GetCurrentEntry();
-}
+}*/

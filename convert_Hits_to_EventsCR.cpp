@@ -8,7 +8,7 @@
 #include "helper_functions.cpp"
 
 
-void convert_raw_to_CRCalc() {
+void convert_Hits_to_EventsCR() {
 	/*** Creates a CERN ROOT file that contains a TTree that holds all the calculated data needed for analysis. Used when source is: cosmic rays (CR)
 
 	Organized in the following branches: (name of branch, root type descriptor)
@@ -33,8 +33,7 @@ void convert_raw_to_CRCalc() {
 	// Setting up TTreeReader for input file
 	UInt_t h5_file_num_input = 101;    // CHOOSE THIS
 
-	// TFile *in_file = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/100_module_202_new_stop_mode_ext_trigger_scan_interpreted_raw.root");
-	TFile *in_file = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(h5_file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_raw.root").c_str());
+	TFile *in_file = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(h5_file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root").c_str());
 
 	TTreeReader *reader = new TTreeReader("Table", in_file);
 
@@ -48,13 +47,12 @@ void convert_raw_to_CRCalc() {
 	TTreeReaderValue<Double_t> z(*reader, "z");
 
 
-	// Create CR Calc file and TTree
-	// TFile *out_file = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/100_module_202_new_stop_mode_ext_trigger_scan_interpreted_CRCalc.root","RECREATE");
-	TFile *out_file = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(h5_file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_CRCalc.root").c_str(), "RECREATE");
-	TTree *t = new TTree("Table","CR Calc Data");
+	// Create EventsCR file and TTree
+	TFile *out_file = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(h5_file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_EventsCR.root").c_str(), "RECREATE");
+	TTree *t = new TTree("Table","EventsCR Data");
 	
-	UInt_t h5_file_num_CRCalc = h5_file_num_input; // must be different name than the one from raw file
-	Long64_t SM_event_num_CRCalc = 0; // must be different name than the one from raw file
+	UInt_t h5_file_num_EventsCR = h5_file_num_input; // must be different name than the one from raw file
+	Long64_t SM_event_num_EventsCR = 0; // must be different name than the one from raw file
 	UInt_t num_hits = 0;
 	UInt_t sum_tots = 0;
 	Double_t mean_x = 0;
@@ -67,8 +65,8 @@ void convert_raw_to_CRCalc() {
 	Double_t sum_of_squares = 0;
 	Double_t fraction_inside_sphere = 0;
 
-	t->Branch("h5_file_num", &h5_file_num_CRCalc, "h5_file_num/i");
-	t->Branch("SM_event_num", &SM_event_num_CRCalc, "SM_event_num/L");
+	t->Branch("h5_file_num", &h5_file_num_EventsCR, "h5_file_num/i");
+	t->Branch("SM_event_num", &SM_event_num_EventsCR, "SM_event_num/L");
 	t->Branch("num_hits", &num_hits, "num_hits/i");
 	t->Branch("sum_tots", &sum_tots, "sum_tots/i");
 	t->Branch("mean_x", &mean_x, "mean_x/D");
@@ -231,8 +229,8 @@ void convert_raw_to_CRCalc() {
 				sum_of_squares = 0;
 			}
 
-			h5_file_num_CRCalc = h5_file_num_input;
-			SM_event_num_CRCalc = smEventNum;
+			h5_file_num_EventsCR = h5_file_num_input;
+			SM_event_num_EventsCR = smEventNum;
 			num_hits = numEntries;
 			sum_tots = sumTots;
 			mean_x = meanX;

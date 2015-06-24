@@ -1,9 +1,9 @@
 Author: Dennis Feng
 
-Procedure to get the final calculated data files (called calc files):
+Procedure to get the final calculated data files (called Events files, ex: EventsCR files):
 1. Run the desired scan (ex: stop mode scan), which will output an ..._interpreted.h5 file.
-2. Run "convert_h5_to_raw.py" (pointing to the desired ..._interpreted.h5), which will output the ..._raw.root file.
-3. Run "convert_raw_to_(SOURCE)-calc.py" (pointing to the desired ..._interpreted.h5), which will output the ..._(SOURCE)-calc.root file.
+2. Run "convert_h5_to_Hits.py" (pointing to the desired ..._interpreted.h5), which will output the ..._Hits.root file.
+3. Run "convert_Hits_to_Events(SOURCE).cpp" (pointing to the desired ..._Hits.root), which will output the ..._Events(SOURCE).root file.
 
 The possible sources are:
 - XR: X-rays, Fe55 source 

@@ -12,14 +12,12 @@ void view_SMEvents_2D() {
 	/*** Displays an 2D occupancy plot for each SM Event. (stop mode event) 
 
 	Can choose which SM event to start at. (find "CHOOSE THIS" in this script)
-	Input file must be a raw file (_interpreted.root file).
+	Input file must be a Hits file (_interpreted_Hits.root file).
 	***/
 	gROOT->Reset(); 
 
 	// Setting up file, treereader, histogram
-	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/90_module_202_new_stop_mode_ext_trigger_scan_interpreted_raw.root");
-
-	//TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2/host/pybar/module_test/745_module_test_stop_mode_ext_trigger_scan_interpreted_raw.root");
+	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/90_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root");
 
 	if (!f) { // if we cannot open the file, print an error message and return immediately
 		cout << "Error: cannot open the root file!\n";

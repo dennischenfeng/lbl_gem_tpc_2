@@ -9,7 +9,7 @@
 #include "helper_functions.cpp"
 
 void view_h5Events_2D() {
-	/*** Used only when input file is an _interpreted_raw.root file (called raw file). Opens a window that allows you to view h5-events one by one. "Enter" to go to next event, 'b' for previous event, <number> for specific event num, or 'q' to quit.
+	/*** Used only when input file is an _interpreted_Hits.root file (called Hits file). Opens a window that allows you to view h5-events one by one. "Enter" to go to next event, 'b' for previous event, <number> for specific event num, or 'q' to quit.
 	You can specify which event number to start at. Ctrl-F "CHANGE THIS" in this script to find the line.
 
 	Note: trigger_number is used for self-trigger scan data; trigger_time_stamp is for ext-trigger-stopmode scan data.
@@ -17,9 +17,7 @@ void view_h5Events_2D() {
 	gROOT->Reset(); 
 
 	// Setting up file, treereader, histogram
-	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/46_module_202_new_stop_mode_ext_trigger_scan_interpreted_raw.root");
-
-	//TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2/host/pybar/module_test/745_module_test_stop_mode_ext_trigger_scan_interpreted_raw.root");
+	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/46_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root");
 
 	if (!f) { // if we cannot open the file, print an error message and return immediately
 		cout << "Error: cannot open the root file!\n";

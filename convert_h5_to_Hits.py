@@ -1,6 +1,6 @@
 """
 Creates a CERN ROOT file that contains a TTree that holds all the necessary data 
-values in its branches. This ..._raw.root file is for my ROOT scripts (.cpp scripts). Uses the hit table from the _interpreted.h5 
+values in its branches. This ..._Hits.root file is for my ROOT scripts (.cpp scripts). Uses the hit table from the _interpreted.h5 
 file of the desired scan to convert. Note that the metadata table isn't actually used 
 anymore (it's a vestigial part of this script).
 
@@ -352,5 +352,5 @@ if __name__ == "__main__":
     # big otherwise program crashed:
     chunk_size = 50000  
     
-    convert_two_hit_tables(path_to_folder + '/' + str(h5_file_num) + '_module_202_new_stop_mode_ext_trigger_scan_interpreted.h5', path_to_folder + '/' + str(h5_file_num) + '_module_202_new_stop_mode_ext_trigger_scan_interpreted_raw.root', h5_file_num)
+    convert_two_hit_tables(path_to_folder + '/' + str(h5_file_num) + '_module_202_new_stop_mode_ext_trigger_scan_interpreted.h5', path_to_folder + '/' + str(h5_file_num) + '_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root', h5_file_num)
     
