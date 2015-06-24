@@ -1,6 +1,6 @@
 """
 Creates a CERN ROOT file that contains a TTree that holds all the necessary data 
-values in its branches. Uses the hit table from the _interpreted.h5 
+values in its branches. This ..._raw.root file is for my ROOT scripts (.cpp scripts). Uses the hit table from the _interpreted.h5 
 file of the desired scan to convert. Note that the metadata table isn't actually used 
 anymore (it's a vestigial part of this script).
 
@@ -346,7 +346,7 @@ def convert_hit_table_fast(input_filename, output_filename):
 
 if __name__ == "__main__":
     path_to_folder = '/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new'
-    h5_file_num = 89
+    h5_file_num = 101    # CHOOSE THIS
 
     # chose this parameter as big as possible to increase speed, but not too 
     # big otherwise program crashed:

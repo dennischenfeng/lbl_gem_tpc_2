@@ -1,6 +1,6 @@
 """
 Creates a txt file that contains all the necessary data 
-values. Uses the hit table from the _interpreted.h5 
+values. The .txt file is for my python scripts. Uses the hit table from the _interpreted.h5 
 file of the desired scan to convert. 
 
 The data contains: (column num, root type descriptor, root type)

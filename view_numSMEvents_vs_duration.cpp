@@ -18,7 +18,7 @@ void view_numSMEvents_vs_duration() {
 	gROOT->Reset(); 
 
 	//--Setting up file, treereader, histogram
-	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/89_module_202_new_stop_mode_ext_trigger_scan_interpreted_raw.root");
+	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/100_module_202_new_stop_mode_ext_trigger_scan_interpreted_raw.root");
 
 	if (!f) { // if we cannot open the file, print an error message and return immediately
 		cout << "Error: cannot open the root file!\n";

@@ -8,7 +8,7 @@
 
 #include "helper_functions.cpp"
 
-void view_SMEvents_3D_TGraph() {
+void view_SMEvents_3D_from_raw() {
 	/*** Displays an 3D occupancy plot for each SM Event. (stop mode event)
 
 	Can choose which SM event to start at. (find "CHOOSE THIS" in this script)
@@ -17,7 +17,7 @@ void view_SMEvents_3D_TGraph() {
 	gROOT->Reset();
 
 	// Setting up file, treereader, histogram
-	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/89_module_202_new_stop_mode_ext_trigger_scan_interpreted_raw.root");
+	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/101_module_202_new_stop_mode_ext_trigger_scan_interpreted_raw.root");
 
 	//TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2/host/pybar/module_test/745_module_test_stop_mode_ext_trigger_scan_interpreted_raw.root");
 
@@ -37,35 +37,15 @@ void view_SMEvents_3D_TGraph() {
 	TTreeReaderValue<Double_t> y(*reader, "y");
 	TTreeReaderValue<Double_t> z(*reader, "z");
 
-	// Initialize the histogram
-	// gStyle->SetCanvasPreferGL(true); // for drawing 3d (very slow)
+	// Initialize the canvas and graph
 	TCanvas *c1 = new TCanvas("c1","3D Occupancy for Specified SM Event", 1000, 10, 900, 550);
-	// TH3F *h = new TH3F("h", "3D Occupancy for Specified SM Event", 80, 0, 20, 336, -16.8, 0, 256, 0, 40.96);
-	// h->GetXaxis()->SetTitle("x (mm)");
-	// h->GetYaxis()->SetTitle("y (mm)");
-	// h->GetZaxis()->SetTitle("z (mm)");
-	// h->SetMarkerStyle(7);
-	
-	TGraph2D *graph = new TGraph2D();
-	// graph->SetPoint(0,1,1,1); // dummy point; I just need to first add a point in order for a lot of the methods to function properly (ex: GetXAxis())
-
-	// graph->SetNameTitle("graph", "3D Occupancy for Specified SM Event");
-	// graph->GetXaxis()->SetTitle("x (mm)");
-	// graph->GetYaxis()->SetTitle("y (mm)");
-	// graph->GetZaxis()->SetTitle("z (mm)");
-
-	// graph->GetXaxis()->SetLimits(0, 20); // ROOT is buggy, x and y use setlimits() 
-	// graph->GetYaxis()->SetLimits(-16.8, 0); // but z uses setrangeuser()
-	// graph->GetZaxis()->SetRangeUser(0, 40.96);
-	
 	c1->SetRightMargin(0.25);
-	
+	TGraph2D *graph = new TGraph2D();
 
 	// Variables used to loop the main loop
 	bool endOfReader = false; // if reached end of the reader
 	bool quit = false; // if pressed q
 	int smEventNum = 1; // the current SM-event CHOOSE THIS to start at desired SM event number
-
 	
 	// Main Loop (loops for every smEventNum)
 	while (!endOfReader && !quit) {
@@ -77,7 +57,7 @@ void view_SMEvents_3D_TGraph() {
 		bool fitFailed = false; // true if the 3D fit failed
 		bool lastEvent = false;
 
-		// Declaring the important values for the current graph and/or line fit
+		// Declaring some important output values for the current graph and/or line fit
 		int numEntries = 0;
 		double sumSquares = 0;
 
@@ -95,7 +75,7 @@ void view_SMEvents_3D_TGraph() {
 			lastEvent = true;
 		}
 
-		// Fill TGraph with points, set title and axes
+		// Fill TGraph with points and set title and axes
 		graph = new TGraph2D(); // create a new TGraph to refresh
 
 		reader->SetEntry(startEntryNum);
@@ -115,21 +95,21 @@ void view_SMEvents_3D_TGraph() {
 		graph->GetZaxis()->SetRangeUser(0, 40.96);
 		c1->SetTitle(histTitle.c_str());
 
-		// 3D Fit, display results, draw graph and line fit, get input, and set smEventNum properly (according to input)
+		// 3D Fit, display results, draw graph and line fit, only accept "good" events, get input
 		if (!endOfReader || lastEvent) {
-			// Draw graph
+			// Display some results
 			numEntries = graph->GetN();
 			cout << "Current SM Event Number: " << smEventNum << "\n";
 			cout << "Number of entries:       " << numEntries << "\n";
 
-			// Getting decent starting parameters for the fit - do two 2D fits (one for x vs z, one for y vs z)
+			// Starting the fit. First, get decent starting parameters for the fit - do two 2D fits (one for x vs z, one for y vs z)
 			TGraph *graphZX = new TGraph();
 			TGraph *graphZY = new TGraph();
 			reader->SetEntry(startEntryNum);
 			for (int i = 0; i < endEntryNum - startEntryNum; i++) {
 				graphZX->SetPoint(i, (*z - 0.001), (*x + 0.001));
 				graphZY->SetPoint(i, (*z - 0.001), (*y + 0.001));
-				endOfReader = !(reader->Next());
+				reader->Next();
 			}
 			TFitResultPtr fitZX = graphZX->Fit("pol1", "WQS"); // w for ignore error of each pt, q for quiet (suppress results output), s for return a tfitresultptr
 			TFitResultPtr fitZY = graphZY->Fit("pol1", "WQS");
@@ -138,7 +118,7 @@ void view_SMEvents_3D_TGraph() {
 			Double_t param2 = fitZY->GetParams()[0];
 			Double_t param3 = fitZY->GetParams()[1];
 
-			// draw the lines for the two 2D fits
+			// // Draw the lines for the two 2D fits
 			// int n = 2;
 			// TPolyLine3D *lineZX = new TPolyLine3D(n);
 			// TPolyLine3D *lineZY = new TPolyLine3D(n);
@@ -152,9 +132,8 @@ void view_SMEvents_3D_TGraph() {
 			// lineZY->Draw("same");
 
 
-			// 3D FITTING CODE (based on line3Dfit.C)
+			// 3D FITTING CODE (based on line3Dfit.C), draw graph and line fit
 			ROOT::Fit::Fitter  fitter;
-
 		   	SumDistance2 sdist(graph);
 #ifdef __CINT__
 		   	ROOT::Math::Functor fcn(&sdist,4,"SumDistance2");
@@ -173,20 +152,20 @@ void view_SMEvents_3D_TGraph() {
 			  fitFailed = true;
 			} else {
 				const ROOT::Fit::FitResult & result = fitter.Result();
+				const double * fitParams = result.GetParams();
+
 				sumSquares = result.MinFcnValue();
 				std::cout << "Sum of distance squares:  " << sumSquares << std::endl;
 				std::cout << "Sum of distance squares divided by numEntries: " << sumSquares/numEntries << std::endl;
+				std::cout << "Theta : " << TMath::ATan(sqrt(pow(fitParams[1], 2) + pow(fitParams[3], 2))) << std::endl;
 				// result.Print(std::cout); // (un)suppress results output
 
-				// get fit parameters
-				const double * parFit = result.GetParams();
-
-				// draw the graph
+				// Draw the graph
 				graph->SetMarkerStyle(8);
 				graph->SetMarkerSize(0.5);
 				graph->Draw("pcol");
 
-				// draw the fitted line
+				// Draw the fitted line
 				int n = 1000;
 				double t0 = 0; // t is the z coordinate
 				double dt = 40.96;
@@ -194,22 +173,58 @@ void view_SMEvents_3D_TGraph() {
 				for (int i = 0; i <n;++i) {
 				  double t = t0+ dt*i/n;
 				  double x,y,z;
-				  line(t,parFit,x,y,z);
+				  line(t,fitParams,x,y,z);
 				  l->SetPoint(i,x,y,z);
 				}
 				l->SetLineColor(kRed);
 				l->Draw("same");
 
 				// Access fit params and minfcnvalue
-				// cout << "FIT1: " << parFit[1] << "\n";
+				// cout << "FIT1: " << fitParams[1] << "\n";
 				// cout << "FIT2: " << result.MinFcnValue() << "\n";
 			}
 
-			// Criteria to be a good event (if not, then don't show)
+			// Criteria to be a good event (if not good entry, then don't show)
 			bool isGoodEvent = false;
-			if (numEntries >= 50 && sumSquares/numEntries < 2.0) {
-				isGoodEvent = true;
-			}
+
+				// the following block of code finds the mean X, Y ans Z values
+				double meanX = 0;
+				double meanY = 0;
+				double meanZ = 0;
+				reader->SetEntry(startEntryNum);
+				for (int i = 0; i < endEntryNum - startEntryNum; i++) {
+					meanX += graph->GetX()[i];
+					meanY += graph->GetY()[i];
+					meanZ += graph->GetZ()[i];
+					reader->Next();
+				}
+				meanX /= endEntryNum - startEntryNum;
+				meanY /= endEntryNum - startEntryNum;
+				meanZ /= endEntryNum - startEntryNum;
+
+				// the following code block calculates the fraction of the hits in the smEvent that are inside a sphere, centered at the mean XYZ, of radius 'radius' (larger fraction means the track is less like a long streak and more like a dense blob)
+				double radius = 1; // length in mm 
+				double fractionInsideSphere = 0;
+				reader->SetEntry(startEntryNum);
+				for (int i = 0; i < endEntryNum - startEntryNum; i++) {
+					double distanceFromMeanXYZ = sqrt(pow(graph->GetX()[i] - meanX, 2) + pow(graph->GetY()[i] - meanY, 2) + pow(graph->GetZ()[i] - meanZ, 2));
+					if (distanceFromMeanXYZ <= 2) {
+						fractionInsideSphere += 1;
+					}
+					reader->Next();
+				}
+				fractionInsideSphere /= endEntryNum - startEntryNum;
+
+				cout << "fraction inside sphere: " << fractionInsideSphere << "\n";
+
+			// if (numEntries >= 50 
+			// 	&& sumSquares/numEntries < 2.0 
+			// 	&& fractionInsideSphere < 0.8) {
+
+			// 	isGoodEvent = true;
+			// }
+
+			isGoodEvent = true;
 
 			if (isGoodEvent) { // won't show drawings or ask for input unless its a good event
 				c1->Update(); // show all the drawings
@@ -237,7 +252,6 @@ void view_SMEvents_3D_TGraph() {
 			} else {
 				cout << "\n";
 			}
-
 
 		}
 		smEventNum++;
