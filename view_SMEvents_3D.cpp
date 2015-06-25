@@ -30,6 +30,7 @@ void view_SMEvents_3D() {
 	TTreeReaderValue<Double_t> x(*readerHits, "x");
 	TTreeReaderValue<Double_t> y(*readerHits, "y");
 	TTreeReaderValue<Double_t> z(*readerHits, "z");
+	TTreeReaderValue<Double_t> s(*readerHits, "s");
 
 	TTreeReader *readerEventsCR = new TTreeReader("Table", fileEventsCR);
 	TTreeReaderValue<UInt_t> num_hits(*readerEventsCR, "num_hits");
@@ -42,7 +43,12 @@ void view_SMEvents_3D() {
 	TTreeReaderValue<Double_t> line_fit_param2(*readerEventsCR, "line_fit_param2");
 	TTreeReaderValue<Double_t> line_fit_param3(*readerEventsCR, "line_fit_param3");
 	TTreeReaderValue<Double_t> sum_of_squares(*readerEventsCR, "sum_of_squares");
+
+	TTreeReaderValue<UInt_t> event_status(*readerEventsCR, "event_status");
 	TTreeReaderValue<Double_t> fraction_inside_sphere(*readerEventsCR, "fraction_inside_sphere");
+	TTreeReaderValue<Double_t> length_track(*readerEventsCR, "length_track");
+	TTreeReaderValue<Double_t> sum_tots_div_by_length_track(*readerEventsCR, "sum_tots_div_by_length_track");
+	TTreeReaderValue<Double_t> sum_squares_div_by_DoF(*readerEventsCR, "sum_squares_div_by_DoF");
 
 	// Initialize the canvas and graph
 	TCanvas *c1 = new TCanvas("c1","3D Occupancy for Specified SM Event", 1000, 10, 900, 550);
@@ -83,7 +89,7 @@ void view_SMEvents_3D() {
 
 		readerHits->SetEntry(startEntryNum_Hits);
 		for (int i = 0; i < endEntryNum_Hits - startEntryNum_Hits; i++) {
-			graph->SetPoint(i, (*x - 0.001), (*y + 0.001), (*z - 0.001));
+			graph->SetPoint(i, (*x - 0.001), (*y + 0.001), (*z - 0.001)); // @@@ z->s
 			endOfReader = !(readerHits->Next());
 		}
 
@@ -95,7 +101,7 @@ void view_SMEvents_3D() {
 
 		graph->GetXaxis()->SetLimits(0, 20); // ROOT is buggy, x and y use setlimits()
 		graph->GetYaxis()->SetLimits(-16.8, 0); // but z uses setrangeuser()
-		graph->GetZaxis()->SetRangeUser(0, 40.96);
+		graph->GetZaxis()->SetRangeUser(0, 40.96); 
 		c1->SetTitle(histTitle.c_str());
 
 		// Get entryNum_EventsCR and setreader to that entry
@@ -113,7 +119,7 @@ void view_SMEvents_3D() {
 			graph->Draw("pcol");
 
 			// Draw the fitted line only if fit did not fail.
-			if (!(*line_fit_param0 == 0 && *line_fit_param1 == 0 && *line_fit_param2 == 0 && *line_fit_param3 == 0)) {
+			if (*event_status != 1) {
 				double fitParams[4];
 				fitParams[0] = *line_fit_param0;
 				fitParams[1] = *line_fit_param1;
@@ -133,28 +139,15 @@ void view_SMEvents_3D() {
 				l->SetLineColor(kRed);
 				l->Draw("same");
 
-				cout << "Sum of squares:            " << *sum_of_squares << "\n";
-				cout << "Sum of squares div by DoF: " << *sum_of_squares / (*num_hits - 2) << "\n";
+				cout << "Sum of squares div by DoF: " << *sum_squares_div_by_DoF << "\n";
 			} else {
-				cout << "Sum of squares:            FIT FAILED\n";
 				cout << "Sum of squares div by DoF: FIT FAILED\n";
 			}
 
 			cout << "Fraction inside sphere (1 mm radius): " << *fraction_inside_sphere << "\n";
+			cout << "Length of track:                      " << *length_track << "\n";
 
-			// Criteria to be a good event (if not good entry, then don't show)
-			bool isGoodEvent = false;
-
-			if (*num_hits >= 50 
-				&& *sum_of_squares / *num_hits < 2.0 
-				&& *fraction_inside_sphere < 0.8) {
-
-				isGoodEvent = true;
-			}
-
-			// isGoodEvent = true;
-
-			if (isGoodEvent) { // won't show drawings or ask for input unless its a good event
+			if (*event_status == 0) { // won't show drawings or ask for input unless its a good event // CHOOSE THIS to show all events or only good events
 				c1->Update(); // show all the drawings
 				// handle input
 				bool inStringValid = false;

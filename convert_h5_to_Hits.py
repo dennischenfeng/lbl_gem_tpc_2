@@ -13,6 +13,7 @@ The TTree contains: (name of branch, root type descriptor, root type)
 6. x, D, Double_t (in mm)
 7. y, D, Double_t 
 8. z, D, Double_t
+9. s, D, Double_t (s is 0 at mean XYZ, direction is along the event's best fit line, positive in the direction of increasing z; this script by itself doesn't create the s branch, but convert_Hits_to_EventsCR.cpp does)
 
 Depending on whether you want to convert self_trigger scans or ext_trigger_stop_mode scans, you may need to choose which init_hit_struct() to use.
 
@@ -157,7 +158,7 @@ def init_tree_from_table(hit_table, meta_table, chunk_size=1, hit_tree_entry=Non
     if(chunk_size > 1 and hit_tree_entry is not None and meta_tree_entry is not None):
         raise NotImplementedError()
 
-    tree = TTree('Table', 'Raw (.root) Data')
+    tree = TTree('Table', 'Hits (_Hits.root) Data')
     n_entries = None
     if chunk_size > 1:
         n_entries = ctypes.c_int(chunk_size) if chunk_size > 1 else 1
@@ -289,7 +290,7 @@ def convert_two_hit_tables(input_filename, output_filename, h5_file_num):
             
             smRelBCID = (int(hit['event_number']) - (int(hit['event_number'])/16) * 16) * 16 + int(hit['relative_BCID']) # Range: 0 - 255
             myExtraCalc.z = (smRelBCID * 0.16) + 0.001 # Drift speed: 0.16 mm per BCID
-
+            
             # Fill the tree that includes data from both trees. 
             tree.Fill()
             if (index % update_progressbar_index == 0):

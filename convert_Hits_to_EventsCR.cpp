@@ -9,7 +9,7 @@
 
 
 void convert_Hits_to_EventsCR() {
-	/*** Creates a CERN ROOT file that contains a TTree that holds all the calculated data needed for analysis. Used when source is: cosmic rays (CR)
+	/*** Creates a CERN ROOT file that contains a TTree that holds all the calculated data needed for analysis. ALSO, updates the Hits file, adding in a branch for the s values. Used when source is: cosmic rays (CR)
 
 	Organized in the following branches: (name of branch, root type descriptor)
 	1. h5_file_num, i, UInt_t
@@ -24,16 +24,30 @@ void convert_Hits_to_EventsCR() {
 	10. line_fit_param2, D, Double_t (y-intercept when z = 0)
 	11. line_fit_param3, D, Double_t (dy/dz)
 	12. sum_of_squares, D, Double_t (same as chi square with error = 1 for all pts)
-	13. fraction_inside_sphere, D, Double_t (fraction of the hits that are within a sphere of radius 1 centered at the mean; if this is close to 1, it means the hits are like a dense blob instead of a long streak)
 	
+	13. event_status, i, UInt_t (0 if good event, 1 if fit failed, 2 if didn't meet "good" event criteria)
+	14. fraction_inside_sphere, D, Double_t (fraction of the hits that are within a sphere of radius 1 centered at the mean; if this is close to 1, it means the hits are like a dense blob instead of a long streak)
+	15. length_track, D, Double_t (length of track, in mm)
+	16. sum_tots_div_by_length_track, D, Double_t
+	17. sum_squares_div_by_DoF, D, Double_t
+	
+
+	Note: to add a new branch:
+	- add to this info comment
+	- make a variable for the branch
+	- make the branch
+	- *if needed, add to list of important output values at the start of while loop
+	- put in calculations for value
+	- assign the branch variable at the end of the while loop
+
 	Author: Dennis Feng	
 	***/
 	gROOT->Reset(); 
 
-	// Setting up TTreeReader for input file
+	// Setting up TTreeReader for input file, also add the "s" branch to the ttree
 	UInt_t h5_file_num_input = 101;    // CHOOSE THIS
 
-	TFile *in_file = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(h5_file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root").c_str());
+	TFile *in_file = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(h5_file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root").c_str(), "UPDATE");
 
 	TTreeReader *reader = new TTreeReader("Table", in_file);
 
@@ -46,6 +60,15 @@ void convert_Hits_to_EventsCR() {
 	TTreeReaderValue<Double_t> y(*reader, "y");
 	TTreeReaderValue<Double_t> z(*reader, "z");
 
+	// Add branch "s" if not already added before:
+	bool noSBranchBefore = false;
+	Double_t s = 0;
+	TTree *T_Hits = (TTree*) in_file->Get("Table"); // tree from Hits file
+	TBranch *branch_S;
+	if (T_Hits->GetBranch("s") == 0) {
+		noSBranchBefore = true;
+		branch_S = T_Hits->Branch("s", &s, "s/D");
+	}
 
 	// Create EventsCR file and TTree
 	TFile *out_file = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(h5_file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_EventsCR.root").c_str(), "RECREATE");
@@ -63,7 +86,12 @@ void convert_Hits_to_EventsCR() {
 	Double_t line_fit_param2 = 0;
 	Double_t line_fit_param3 = 0;
 	Double_t sum_of_squares = 0;
+
+	UInt_t event_status = 0;
 	Double_t fraction_inside_sphere = 0;
+	Double_t length_track = 0;
+	Double_t sum_tots_div_by_length_track = 0;
+	Double_t sum_squares_div_by_DoF = 0;
 
 	t->Branch("h5_file_num", &h5_file_num_EventsCR, "h5_file_num/i");
 	t->Branch("SM_event_num", &SM_event_num_EventsCR, "SM_event_num/L");
@@ -77,7 +105,12 @@ void convert_Hits_to_EventsCR() {
 	t->Branch("line_fit_param2", &line_fit_param2, "line_fit_param2/D");
 	t->Branch("line_fit_param3", &line_fit_param3, "line_fit_param3/D");
 	t->Branch("sum_of_squares", &sum_of_squares, "sum_of_squares/D");
+
+	t->Branch("event_status", &event_status, "event_status/i");
 	t->Branch("fraction_inside_sphere", &fraction_inside_sphere, "fraction_inside_sphere/D");
+	t->Branch("length_track", &length_track, "length_track/D");
+	t->Branch("sum_tots_div_by_length_track", &sum_tots_div_by_length_track, "sum_tots_div_by_length_track/D");
+	t->Branch("sum_squares_div_by_DoF", &sum_squares_div_by_DoF, "sum_squares_div_by_DoF/D");
 
 
 
@@ -96,7 +129,6 @@ void convert_Hits_to_EventsCR() {
 		// Variables used in this main loop
 		int startEntryNum = 0;
 		int endEntryNum = 0;
-		bool fitFailed = false; // true if the 3D fit failed
 		bool lastEvent = false;
 
 		// Declaring some important output values for the current graph and/or line fit
@@ -111,8 +143,9 @@ void convert_Hits_to_EventsCR() {
 		double param3 = 0;
 		double sumSquares = 0;
 
-		// Print out the smEventNum
-		cout << "Calculating data for SM Event Num " << smEventNum << "\n";
+		UInt_t eventStatus = 0;
+		double fractionInsideSphere = 0;
+		double lengthTrack = 0;
 
 		// Get startEntryNum and endEntryNum
 		startEntryNum = getEntryNumWithSMEventNum(reader, smEventNum);
@@ -184,13 +217,14 @@ void convert_Hits_to_EventsCR() {
 
 			bool ok = fitter.FitFCN();
 			if (!ok) {
-				Error("line3Dfit","Line3D Fit failed");
-				fitFailed = true;
+				// Error("line3Dfit","Line3D Fit failed");
+				cout << "Error: SM Event " << smEventNum << ": 3D line fit failed.\n";
+				eventStatus = 1; // signifies that fit failed
 			} else if (numEntries == 1) {
-				cout << "Error solved: The SM Event " << smEventNum << " has only 1 hit, so the line fit failed, and it was taken care of accordingly." << "\n";
-				fitFailed = true;
+				cout << "Error solved: SM Event " << smEventNum << ": Has only 1 hit, so the line fit failed, and it was taken care of accordingly." << "\n";
+				eventStatus = 1; // signifies that fit failed
 			} else if (numEntries <= 0) {
-				cout << "Error: The SM Event " << smEventNum << " causes numEntries <= 0, which should never be the case." << "\n";
+				cout << "Error: SM Event " << smEventNum << ": Causes numEntries <= 0, which should never be the case." << "\n";
 			} else {
 				const ROOT::Fit::FitResult & result = fitter.Result();
 				const double * fitParams = result.GetParams();
@@ -205,10 +239,33 @@ void convert_Hits_to_EventsCR() {
 				// std::cout << "Theta : " << TMath::ATan(sqrt(pow(fitParams[1], 2) + pow(fitParams[3], 2))) << std::endl;
 			}
 
-			// Variables for determining whether the current event is a "good" event
+			// Add s value to Hits file for each hit
+			// s = AP . AB_hat; the "." is a dot product, and _hat means it's a unit vector. Point A is the mean XYZ position. Point P is the current hit position. AB_hat is a unit vector pointing along the track's best fit line, in the direction of increasing z.
+			TVector3 AB(param1, param3, 1);
+			TVector3 AB_hat = AB * (1 / sqrt(AB.Dot(AB)));
+			double max_s = 0; // maximum s in this event
+			double min_s = 0;
+			reader->SetEntry(startEntryNum);
+			for (int i = 0; i < endEntryNum - startEntryNum; i++) {
+				TVector3 AP(*x - meanX, *y - meanY, *z - meanZ);
+				s = AP.Dot(AB_hat);
+				
+				if (noSBranchBefore) {
+					branch_S->Fill();
+				}
+
+				if (s > max_s) {
+					max_s = s;
+				} else if (s < min_s) {
+					min_s = s;
+				}
+
+				reader->Next();
+			}
+			lengthTrack = max_s - min_s;
+
 			// calculating fraction of hits inside the sphere of radius 1 (mm)
 			double radius = 1; // length in mm 
-			double fractionInsideSphere = 0;
 			reader->SetEntry(startEntryNum);
 			for (int i = 0; i < endEntryNum - startEntryNum; i++) {
 				double distanceFromMeanXYZ = sqrt(pow(graph->GetX()[i] - meanX, 2) + pow(graph->GetY()[i] - meanY, 2) + pow(graph->GetZ()[i] - meanZ, 2));
@@ -219,14 +276,13 @@ void convert_Hits_to_EventsCR() {
 			}
 			fractionInsideSphere /= endEntryNum - startEntryNum;
 
-
-			// Fill the TTree
-			if (fitFailed) { // if fit failed, these variables are 0
-				line_fit_param0 = 0;
-				line_fit_param1 = 0;
-				line_fit_param2 = 0;
-				line_fit_param3 = 0;
-				sum_of_squares = 0;
+			// Fill the TTree, fill in event_status after all the others
+			if (eventStatus == 1) { // if fit failed, these variables are 0
+				param0 = 0;
+				param1 = 0;
+				param2 = 0;
+				param3 = 0;
+				sumSquares = 0;
 			}
 
 			h5_file_num_EventsCR = h5_file_num_input;
@@ -241,16 +297,33 @@ void convert_Hits_to_EventsCR() {
 			line_fit_param2 = param2;
 			line_fit_param3 = param3;
 			sum_of_squares = sumSquares;
+
+			// event_status = eventStatus;
 			fraction_inside_sphere = fractionInsideSphere;
+			length_track = lengthTrack;
+			sum_tots_div_by_length_track = sum_tots / length_track;
+			sum_squares_div_by_DoF = sum_of_squares / (num_hits - 2);
+
+			if (eventStatus != 1) { // if fit didn't fail
+				if (num_hits < 50 
+					|| sum_of_squares / num_hits >= 2.0 
+					|| fraction_inside_sphere >= 0.8
+					|| length_track < 3.0) { // if bad event
+
+					eventStatus = 2;
+				}
+			}
+			event_status = eventStatus;
 
 			t->Fill();
+			cout << "SM Event " << smEventNum << ": event_status: " << event_status << "\n";
 		}
 		smEventNum++;
 	}
 
 
-
-
+	in_file->Write();
+    in_file->Close();
 	out_file->Write();
     out_file->Close();
 }
