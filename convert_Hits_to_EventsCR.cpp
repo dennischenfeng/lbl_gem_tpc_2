@@ -45,7 +45,7 @@ void convert_Hits_to_EventsCR() {
 	gROOT->Reset(); 
 
 	// Setting up TTreeReader for input file, also add the "s" branch to the ttree
-	UInt_t h5_file_num_input = 101;    // CHOOSE THIS
+	UInt_t h5_file_num_input = 133;    // CHOOSE THIS
 
 	TFile *in_file = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(h5_file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root").c_str(), "UPDATE");
 

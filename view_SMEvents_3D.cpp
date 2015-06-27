@@ -16,7 +16,7 @@ void view_SMEvents_3D() {
 	gROOT->Reset();
 
 	// Setting up files, treereaders, histograms
-	int h5_file_num_input = 101;
+	int h5_file_num_input = 133;
 
 	TFile *fileHits = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(h5_file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root").c_str());
 	TFile *fileEventsCR = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(h5_file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_EventsCR.root").c_str());

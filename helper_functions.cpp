@@ -135,6 +135,7 @@ vector<int> getEntryRangeWithEventNumRange(TTreeReader *reader, int startEventNu
 	return entryRange;
 }
 
+// old
 int getEntryNumWithSMEventNum(TTreeReader *reader, int smEventNum) {
 	/* Tries to get the entry number of reader to the first entry that has *SM_event_num smEventNum. Does not change the reader.
 
@@ -161,6 +162,42 @@ int getEntryNumWithSMEventNum(TTreeReader *reader, int smEventNum) {
 
     reader->SetEntry(initialEntryNum);
     return -3;
+}
+
+vector<int> getEntryNumRangeWithH5FileNumAndSMEventNum(TTreeReader *reader, int h5FileNum, int smEventNum) {
+	/* Returns a vector that contains two elements: 
+	1st: startEntryNum
+	2nd: endEntryNum_include, this entry num is INCLUDED in the range; this is different from some of the above scripts
+
+	Assumes that the entryNumRange is either a single continuous range, or it can't be found. If the specified h5FileNum and SMEventNum pair cannot be found in the reader, the returned vector will be {-1, -1}; 
+	*/
+
+	int initialEntryNum = reader->GetCurrentEntry();
+	vector<int> entryNumRange_include(2);
+	entryNumRange_include[0] = -1;
+	entryNumRange_include[1] = -1;
+
+
+	TTreeReaderValue<UInt_t> h5_file_num(*reader, "h5_file_num");
+	TTreeReaderValue<Long64_t> SM_event_num(*reader, "SM_event_num");
+
+	bool foundStart = false;
+
+	reader->SetEntry(-1);
+	while (reader->Next()) { 
+        if (*h5_file_num == h5FileNum && *SM_event_num == smEventNum && !foundStart) {
+            entryNumRange_include[0] = reader->GetCurrentEntry();
+            entryNumRange_include[1] = entryNumRange_include[0]; // initialize
+            foundStart = true;
+        } else if (*h5_file_num == h5FileNum && *SM_event_num == smEventNum && foundStart) {
+            entryNumRange_include[1] = reader->GetCurrentEntry();
+        } else if (foundStart && !(*h5_file_num == h5FileNum && *SM_event_num == smEventNum)) {
+        	reader->SetEntry(initialEntryNum);
+        	return entryNumRange_include;
+        }
+    }
+    reader->SetEntry(initialEntryNum);
+    return entryNumRange_include;
 }
 
 // The following three code blocks are from line3Dfit.C from the ROOT tutorials folder
@@ -239,10 +276,8 @@ struct SumDistance2 {
 	TTreeReaderValue<UInt_t> h5_file_num(*reader, "h5_file_num");
 	TTreeReaderValue<Long64_t> event_number(*reader, "event_number");
 	
-	int smEventNum = 12;
-	int startEntryNum = getEntryNumWithSMEventNum(reader, smEventNum);
-	int endEntryNum = getEntryNumWithSMEventNum(reader, smEventNum + 1);
+	vector<int> entryNumRange_include = getEntryNumRangeWithH5FileNumAndSMEventNum(reader, 46, 12);
 
-	cout << startEntryNum << "   " << endEntryNum << "\n";
+	cout << entryNumRange_include[0] << "     " << entryNumRange_include[1] << "\n";
 	cout << reader->GetCurrentEntry();
 }*/

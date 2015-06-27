@@ -17,7 +17,7 @@ void view_numHits_vs_SMRelBCID() {
 	gROOT->Reset(); 
 
 	// Setting up file, treereader, histogram
-	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/101_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root");
+	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/133_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root");
 
 	if (!f) { // if we cannot open the file, print an error message and return immediately
 		cout << "Error: cannot open the root file!\n";
