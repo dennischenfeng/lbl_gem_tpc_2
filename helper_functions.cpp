@@ -268,7 +268,7 @@ struct SumDistance2 {
 
 
 
-void helper_functions() { // this function is for testing purposes
+/*void helper_functions() { // this function is for testing purposes
 	int h5_file_num_input = 133;
 
 	TFile *fileHits = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(h5_file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root").c_str());
@@ -316,4 +316,4 @@ void helper_functions() { // this function is for testing purposes
 
 	cout << entryNumRange_include[0] << "     " << entryNumRange_include[1] << "\n";
 	cout << readerHits->GetCurrentEntry();
-}
+}*/

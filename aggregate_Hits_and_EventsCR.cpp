@@ -21,14 +21,14 @@ void aggregate_Hits_and_EventsCR() {
 
 
 	// CHOOSE THESE 
-	int aggrFileNum = 4;
+	int aggrFileNum = 5;
 	const int numFiles = 8; 
 	const int fileNums[numFiles] = {118,122,125,129,130,131,132, 133}; // h5 file nums of the Hits files (and corresponding EventsCR files) that will be aggregated into the Aggregate files
 
 
 	// Make files, trees, and branches for AggrHits and AggrEventsCR
 	TFile *f_AggrHits = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/homemade_scripts/aggregate_data/" + to_string(aggrFileNum) + "_module_202_new_AggrHits.root").c_str(), "RECREATE");
-	TTree *T_AggrHits = new TTree("T_AggrHits", "Aggregate Hits Data");
+	TTree *T_AggrHits = new TTree("Table", "Aggregate Hits Data");
 	UInt_t h5_file_num_AggrHits = 0;
 	Long64_t event_number_AggrHits = 0;
 	UChar_t tot_AggrHits = 0;
@@ -49,7 +49,7 @@ void aggregate_Hits_and_EventsCR() {
 	T_AggrHits->Branch("s", &s_AggrHits, "s/D");
 
 	TFile *f_AggrEventsCR = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/homemade_scripts/aggregate_data/" + to_string(aggrFileNum) + "_module_202_new_AggrEventsCR.root").c_str(), "RECREATE");
-	TTree *T_AggrEventsCR = new TTree("T_AggrEventsCR", "Aggregate EventsCR Data");
+	TTree *T_AggrEventsCR = new TTree("Table", "Aggregate EventsCR Data");
 	UInt_t h5_file_num_AggrEventsCR = 0;
 	Long64_t SM_event_num_AggrEventsCR = 0;
 	UInt_t num_hits_AggrEventsCR = 0;

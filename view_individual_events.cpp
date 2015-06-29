@@ -8,8 +8,10 @@
 
 #include "helper_functions.cpp"
 
-void view_SMEvents_3D() {
-	/*** Displays an 3D occupancy plot for each SM Event (stop mode event). The h5_file_num chosen must have working Hits and EventsCR files (_Hits.root and _EventsCR.root files).
+void view_individual_events() {
+	/*** 
+
+	Displays an 3D occupancy plot for each SM Event (stop mode event). The h5_file_num chosen must have working Hits and EventsCR files (_Hits.root and _EventsCR.root files).
 
 	Can choose which SM event to start at. (find "CHOOSE THIS" in this script)
 	***/
@@ -17,8 +19,10 @@ void view_SMEvents_3D() {
 
 	// Setting up files, treereaders, histograms
 	string file_kind = "aggr"; // string that is either "aggr" or "non_aggr" to indicate whether or not its an aggregate file pair or not.
-	int file_num_input = 4;
-	
+	int file_num_input = 5;
+	// string view = "3d"; // choose what to view:
+	// "3d": view the events in 3d
+
 
 
 	TFile *fileHits;
@@ -27,7 +31,9 @@ void view_SMEvents_3D() {
 		fileHits = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root").c_str());
 		fileEventsCR = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_EventsCR.root").c_str());
 	} else if (file_kind.compare("aggr") == 0) {
+		// fileHits = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/homemade_scripts/aggregate_data/1_module_202_new_AggrHits.root");
 		fileHits = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/homemade_scripts/aggregate_data/" + to_string(file_num_input) + "_module_202_new_AggrHits.root").c_str());
+		// fileEventsCR = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/homemade_scripts/aggregate_data/1_module_202_new_AggrEventsCR.root");
 		fileEventsCR = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/homemade_scripts/aggregate_data/" + to_string(file_num_input) + "_module_202_new_AggrEventsCR.root").c_str());
 	} else {
 		cout << "Error: Input file_kind is not valid.";
@@ -45,6 +51,8 @@ void view_SMEvents_3D() {
 	TTreeReaderValue<Double_t> s(*readerHits, "s");
 
 	TTreeReader *readerEventsCR = new TTreeReader("Table", fileEventsCR);
+
+	
 	TTreeReaderValue<UInt_t> h5_file_num_EventsCR(*readerEventsCR, "h5_file_num");
 	TTreeReaderValue<Long64_t> SM_event_num_EventsCR(*readerEventsCR, "SM_event_num");
 	TTreeReaderValue<UInt_t> num_hits(*readerEventsCR, "num_hits");
@@ -67,13 +75,14 @@ void view_SMEvents_3D() {
 	// Initialize the canvas and graph
 	TCanvas *c1 = new TCanvas("c1","3D Occupancy for Specified SM Event", 1000, 10, 900, 550);
 	c1->SetRightMargin(0.25);
-	TGraph2D *graph = new TGraph2D();
+	// TGraph2D *graph = new TGraph2D();
 
 
 	bool quit = false; // if pressed q
 	
 	// Main Loop (loops for every entry in readerEventsCR
 	while (readerEventsCR->Next() && !quit) {
+		
 		if (readerEventsCR->GetCurrentEntry() == 0) {
 			continue; // skip the entry num 0, because it probably contains no data
 		}
@@ -85,8 +94,13 @@ void view_SMEvents_3D() {
 			cout << "Error: h5_file_num and SM_event_num should be able to be found in the Hits file.\n";
 		}
 
+
+
+
+
+
 		// Fill TGraph with points and set title and axes
-		graph = new TGraph2D(); // create a new TGraph to refresh
+		TGraph2D *graph = new TGraph2D(); // create a new TGraph to refresh
 		readerHits->SetEntry(entryNumRange_include[0]);
 		for (int i = 0; i < entryNumRange_include[1] - entryNumRange_include[0] + 1; i++) {
 			graph->SetPoint(i, (*x - 0.001), (*y + 0.001), (*z - 0.001));
@@ -141,6 +155,12 @@ void view_SMEvents_3D() {
 
 		cout << "Fraction inside sphere (1 mm radius): " << *fraction_inside_sphere << "\n";
 		cout << "Length of track:                      " << *length_track << "\n";
+
+		
+
+
+
+
 
 		
 
