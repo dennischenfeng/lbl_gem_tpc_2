@@ -1,0 +1,5 @@
+Aggr #, Filter, Other info
+
+2. first set of "good" event criteria
+3. first set of "good" event criteria, no events with sumtots/lengthtrack larger than 150, includes zenith angle in EventsCR 
+4. 2nd set of criteria 

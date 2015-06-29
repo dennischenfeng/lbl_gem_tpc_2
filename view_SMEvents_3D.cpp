@@ -16,23 +16,37 @@ void view_SMEvents_3D() {
 	gROOT->Reset();
 
 	// Setting up files, treereaders, histograms
-	int h5_file_num_input = 133;
+	string file_kind = "aggr"; // string that is either "aggr" or "non_aggr" to indicate whether or not its an aggregate file pair or not.
+	int file_num_input = 4;
+	
 
-	TFile *fileHits = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(h5_file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root").c_str());
-	TFile *fileEventsCR = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(h5_file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_EventsCR.root").c_str());
+
+	TFile *fileHits;
+	TFile *fileEventsCR;
+	if (file_kind.compare("non_aggr") == 0) {
+		fileHits = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root").c_str());
+		fileEventsCR = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_EventsCR.root").c_str());
+	} else if (file_kind.compare("aggr") == 0) {
+		fileHits = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/homemade_scripts/aggregate_data/" + to_string(file_num_input) + "_module_202_new_AggrHits.root").c_str());
+		fileEventsCR = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/homemade_scripts/aggregate_data/" + to_string(file_num_input) + "_module_202_new_AggrEventsCR.root").c_str());
+	} else {
+		cout << "Error: Input file_kind is not valid.";
+	}
 
 	TTreeReader *readerHits = new TTreeReader("Table", fileHits);
-	TTreeReaderValue<UInt_t> h5_file_num(*readerHits, "h5_file_num");
+	TTreeReaderValue<UInt_t> h5_file_num_Hits(*readerHits, "h5_file_num");
 	TTreeReaderValue<Long64_t> event_number(*readerHits, "event_number");
 	TTreeReaderValue<UChar_t> tot(*readerHits, "tot");
 	TTreeReaderValue<UChar_t> relative_BCID(*readerHits, "relative_BCID");
-	TTreeReaderValue<Long64_t> SM_event_num(*readerHits, "SM_event_num");
+	TTreeReaderValue<Long64_t> SM_event_num_Hits(*readerHits, "SM_event_num");
 	TTreeReaderValue<Double_t> x(*readerHits, "x");
 	TTreeReaderValue<Double_t> y(*readerHits, "y");
 	TTreeReaderValue<Double_t> z(*readerHits, "z");
 	TTreeReaderValue<Double_t> s(*readerHits, "s");
 
 	TTreeReader *readerEventsCR = new TTreeReader("Table", fileEventsCR);
+	TTreeReaderValue<UInt_t> h5_file_num_EventsCR(*readerEventsCR, "h5_file_num");
+	TTreeReaderValue<Long64_t> SM_event_num_EventsCR(*readerEventsCR, "SM_event_num");
 	TTreeReaderValue<UInt_t> num_hits(*readerEventsCR, "num_hits");
 	TTreeReaderValue<UInt_t> sum_tots(*readerEventsCR, "sum_tots");
 	TTreeReaderValue<Double_t> mean_x(*readerEventsCR, "mean_x");
@@ -55,127 +69,112 @@ void view_SMEvents_3D() {
 	c1->SetRightMargin(0.25);
 	TGraph2D *graph = new TGraph2D();
 
-	// Variables used to loop the main loop
-	bool endOfReader = false; // if reached end of the readerHits
+
 	bool quit = false; // if pressed q
-	int smEventNum = 1; // the current SM-event CHOOSE THIS to start at desired SM event number
 	
-	// Main Loop (loops for every smEventNum)
-	while (!endOfReader && !quit) {
-		// Variables used in this main loop
-		int startEntryNum_Hits = 0; // for readerHits
-		int endEntryNum_Hits = 0;
-		int entryNum_EventsCR = 0; // for readerEventsCR
-		string histTitle = "3D Occupancy for SM Event ";
-		string inString = "";
-		bool lastEvent = false;
+	// Main Loop (loops for every entry in readerEventsCR
+	while (readerEventsCR->Next() && !quit) {
+		if (readerEventsCR->GetCurrentEntry() == 0) {
+			continue; // skip the entry num 0, because it probably contains no data
+		}
 
 		// Get startEntryNum_Hits and endEntryNum_Hits (for readerHits)
-		startEntryNum_Hits = getEntryNumWithSMEventNum(readerHits, smEventNum);
-		endEntryNum_Hits = getEntryNumWithSMEventNum(readerHits, smEventNum + 1);
-
-		if (startEntryNum_Hits == -2) { // can't find the smEventNum
-			cout << "Error: There should not be any SM event numbers that are missing." << "\n";
-		} else if (startEntryNum_Hits == -3) { 
-			endOfReader = true;
-			break;
-		} else if (endEntryNum_Hits == -3) { // assuming no SM event nums are skipped
-			endEntryNum_Hits = readerHits->GetEntries(false);
-			lastEvent = true;
+		vector<int> entryNumRange_include(2);
+		entryNumRange_include = getEntryNumRangeWithH5FileNumAndSMEventNum(readerHits, *h5_file_num_EventsCR, *SM_event_num_EventsCR);
+		if (entryNumRange_include[0] == -1) {
+			cout << "Error: h5_file_num and SM_event_num should be able to be found in the Hits file.\n";
 		}
 
 		// Fill TGraph with points and set title and axes
 		graph = new TGraph2D(); // create a new TGraph to refresh
-
-		readerHits->SetEntry(startEntryNum_Hits);
-		for (int i = 0; i < endEntryNum_Hits - startEntryNum_Hits; i++) {
-			graph->SetPoint(i, (*x - 0.001), (*y + 0.001), (*z - 0.001)); // @@@ z->s
-			endOfReader = !(readerHits->Next());
+		readerHits->SetEntry(entryNumRange_include[0]);
+		for (int i = 0; i < entryNumRange_include[1] - entryNumRange_include[0] + 1; i++) {
+			graph->SetPoint(i, (*x - 0.001), (*y + 0.001), (*z - 0.001));
+			readerHits->Next();
 		}
-
-		histTitle.append(to_string(smEventNum));
+		
+		string histTitle = "3D Occupancy for SM Event ";
+		histTitle.append(to_string(*SM_event_num_EventsCR));
 		graph->SetTitle(histTitle.c_str());
 		graph->GetXaxis()->SetTitle("x (mm)");
 		graph->GetYaxis()->SetTitle("y (mm)");
 		graph->GetZaxis()->SetTitle("z (mm)");
-
 		graph->GetXaxis()->SetLimits(0, 20); // ROOT is buggy, x and y use setlimits()
 		graph->GetYaxis()->SetLimits(-16.8, 0); // but z uses setrangeuser()
 		graph->GetZaxis()->SetRangeUser(0, 40.96); 
 		c1->SetTitle(histTitle.c_str());
 
-		// Get entryNum_EventsCR and setreader to that entry
-		entryNum_EventsCR = getEntryNumWithSMEventNum(readerEventsCR, smEventNum);
-		readerEventsCR->SetEntry(entryNum_EventsCR);
+		// Draw the graph
+		graph->SetMarkerStyle(8);
+		graph->SetMarkerSize(0.5);
+		graph->Draw("pcol");
 
 		// Display results, draw graph and line fit, only accept "good" events, get input
-		if (!endOfReader || lastEvent) {
-			cout << "SM Event Num:   " << smEventNum << "\n";
-			cout << "Number of hits: " << *num_hits << "\n";
+		cout << "SM Event Num:   " << *SM_event_num_EventsCR << "\n";
+		cout << "Number of hits: " << *num_hits << "\n";
 
-			// Draw the graph
-			graph->SetMarkerStyle(8);
-			graph->SetMarkerSize(0.5);
-			graph->Draw("pcol");
+		// Draw the fitted line only if fit did not fail.
+		if (*event_status != 1) {
+			double fitParams[4];
+			fitParams[0] = *line_fit_param0;
+			fitParams[1] = *line_fit_param1;
+			fitParams[2] = *line_fit_param2;
+			fitParams[3] = *line_fit_param3;
 
-			// Draw the fitted line only if fit did not fail.
-			if (*event_status != 1) {
-				double fitParams[4];
-				fitParams[0] = *line_fit_param0;
-				fitParams[1] = *line_fit_param1;
-				fitParams[2] = *line_fit_param2;
-				fitParams[3] = *line_fit_param3;
-
-				int n = 1000;
-				double t0 = 0; // t is the z coordinate
-				double dt = 40.96;
-				TPolyLine3D *l = new TPolyLine3D(n);
-				for (int i = 0; i <n;++i) {
-				  double t = t0+ dt*i/n;
-				  double x,y,z;
-				  line(t,fitParams,x,y,z);
-				  l->SetPoint(i,x,y,z);
-				}
-				l->SetLineColor(kRed);
-				l->Draw("same");
-
-				cout << "Sum of squares div by DoF: " << *sum_squares_div_by_DoF << "\n";
-			} else {
-				cout << "Sum of squares div by DoF: FIT FAILED\n";
+			int n = 1000;
+			double t0 = 0; // t is the z coordinate
+			double dt = 40.96;
+			TPolyLine3D *l = new TPolyLine3D(n);
+			for (int i = 0; i <n;++i) {
+			  double t = t0+ dt*i/n;
+			  double x,y,z;
+			  line(t,fitParams,x,y,z);
+			  l->SetPoint(i,x,y,z);
 			}
+			l->SetLineColor(kRed);
+			l->Draw("same");
 
-			cout << "Fraction inside sphere (1 mm radius): " << *fraction_inside_sphere << "\n";
-			cout << "Length of track:                      " << *length_track << "\n";
-
-			if (*event_status == 0) { // won't show drawings or ask for input unless its a good event // CHOOSE THIS to show all events or only good events
-				c1->Update(); // show all the drawings
-				// handle input
-				bool inStringValid = false;
-	            do {
-		            cout << "<Enter>: next event; 'b': previous SM event; [number]: specific SM event number; 'q': quit.\n";
-		            getline(cin, inString);
-
-		            // Handles behavior according to input
-		            if (inString.empty()) { // <Enter>
-		            	// leave things be
-						inStringValid = true;
-		            } else if (inString.compare("b") == 0) {
-						smEventNum -= 2; // because it gets incremented once at the end of this do while loop
-						inStringValid = true;
-					} else if (inString.compare("q") == 0 || inString.compare(".q") == 0) {
-						quit = true;
-						inStringValid = true;
-					} else if (canConvertStringToPosInt(inString)) {
-						smEventNum = convertStringToPosInt(inString) - 1; // -1 because it gets incremented once at the end of this do while loop
-						inStringValid = true;
-					} // else, leave inStringValid as false, so that it asks for input again
-				} while (!inStringValid);
-			} else {
-				cout << "\n";
-			}
-
+			cout << "Sum of squares div by DoF: " << *sum_squares_div_by_DoF << "\n";
+		} else {
+			cout << "Sum of squares div by DoF: FIT FAILED\n";
 		}
-		smEventNum++;
+
+		cout << "Fraction inside sphere (1 mm radius): " << *fraction_inside_sphere << "\n";
+		cout << "Length of track:                      " << *length_track << "\n";
+
+		
+
+		
+		if (*event_status == 0) { // won't show drawings or ask for input unless its a good event // CHOOSE THIS to show all events or only good events
+			c1->Update(); // show all the drawings
+			// handle input
+			string inString = "";
+			bool inStringValid = false;
+            do {
+	            cout << "<Enter>: next event; 'b': previous SM event; [number]: specific SM event number; 'q': quit.\n";
+	            getline(cin, inString);
+
+	            // Handles behavior according to input
+	            if (inString.empty()) { // <Enter>
+	            	// leave things be
+					inStringValid = true;
+	            } else if (inString.compare("b") == 0) {
+					readerEventsCR->SetEntry(readerEventsCR->GetCurrentEntry() - 2);
+					// smEventNum -= 2; // because it gets incremented once at the end of this do while loop
+					inStringValid = true;
+				} else if (inString.compare("q") == 0 || inString.compare(".q") == 0) {
+					quit = true;
+					inStringValid = true;
+				} else if (canConvertStringToPosInt(inString)) {
+					readerEventsCR->SetEntry(convertStringToPosInt(inString) - 1);
+					// smEventNum = convertStringToPosInt(inString) - 1; // -1 because it gets incremented once at the end of this do while loop
+					inStringValid = true;
+				} // else, leave inStringValid as false, so that it asks for input again
+			} while (!inStringValid);
+		} else {
+			cout << "\n";
+		}
+
 	}
 
 	cout << "Exiting program.\n";

@@ -268,16 +268,52 @@ struct SumDistance2 {
 
 
 
-/*void helper_functions() { // this function is for testing purposes
-	TFile *f = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/46_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root");
+void helper_functions() { // this function is for testing purposes
+	int h5_file_num_input = 133;
 
-	TTreeReader *reader = new TTreeReader("Table", f);
+	TFile *fileHits = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(h5_file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root").c_str());
+	TFile *fileEventsCR = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(h5_file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_EventsCR.root").c_str());
 
-	TTreeReaderValue<UInt_t> h5_file_num(*reader, "h5_file_num");
-	TTreeReaderValue<Long64_t> event_number(*reader, "event_number");
-	
-	vector<int> entryNumRange_include = getEntryNumRangeWithH5FileNumAndSMEventNum(reader, 46, 12);
+	TTreeReader *readerHits = new TTreeReader("Table", fileHits);
+	TTreeReaderValue<UInt_t> h5_file_num_Hits(*readerHits, "h5_file_num");
+	TTreeReaderValue<Long64_t> event_number(*readerHits, "event_number");
+	TTreeReaderValue<UChar_t> tot(*readerHits, "tot");
+	TTreeReaderValue<UChar_t> relative_BCID(*readerHits, "relative_BCID");
+	TTreeReaderValue<Long64_t> SM_event_num_Hits(*readerHits, "SM_event_num");
+	TTreeReaderValue<Double_t> x(*readerHits, "x");
+	TTreeReaderValue<Double_t> y(*readerHits, "y");
+	TTreeReaderValue<Double_t> z(*readerHits, "z");
+	TTreeReaderValue<Double_t> s(*readerHits, "s");
+
+	TTreeReader *readerEventsCR = new TTreeReader("Table", fileEventsCR);
+	TTreeReaderValue<UInt_t> h5_file_num_EventsCR(*readerEventsCR, "h5_file_num");
+	TTreeReaderValue<Long64_t> SM_event_num_EventsCR(*readerEventsCR, "SM_event_num");
+	TTreeReaderValue<UInt_t> num_hits(*readerEventsCR, "num_hits");
+	TTreeReaderValue<UInt_t> sum_tots(*readerEventsCR, "sum_tots");
+	TTreeReaderValue<Double_t> mean_x(*readerEventsCR, "mean_x");
+	TTreeReaderValue<Double_t> mean_y(*readerEventsCR, "mean_y");
+	TTreeReaderValue<Double_t> mean_z(*readerEventsCR, "mean_z");
+	TTreeReaderValue<Double_t> line_fit_param0(*readerEventsCR, "line_fit_param0");
+	TTreeReaderValue<Double_t> line_fit_param1(*readerEventsCR, "line_fit_param1");
+	TTreeReaderValue<Double_t> line_fit_param2(*readerEventsCR, "line_fit_param2");
+	TTreeReaderValue<Double_t> line_fit_param3(*readerEventsCR, "line_fit_param3");
+	TTreeReaderValue<Double_t> sum_of_squares(*readerEventsCR, "sum_of_squares");
+
+	TTreeReaderValue<UInt_t> event_status(*readerEventsCR, "event_status");
+	TTreeReaderValue<Double_t> fraction_inside_sphere(*readerEventsCR, "fraction_inside_sphere");
+	TTreeReaderValue<Double_t> length_track(*readerEventsCR, "length_track");
+	TTreeReaderValue<Double_t> sum_tots_div_by_length_track(*readerEventsCR, "sum_tots_div_by_length_track");
+	TTreeReaderValue<Double_t> sum_squares_div_by_DoF(*readerEventsCR, "sum_squares_div_by_DoF");
+
+
+
+
+	vector<int> entryNumRange_include(2);
+	readerEventsCR->Next();
+	readerEventsCR->Next();
+
+	entryNumRange_include = getEntryNumRangeWithH5FileNumAndSMEventNum(readerHits, *h5_file_num_EventsCR, *SM_event_num_EventsCR);
 
 	cout << entryNumRange_include[0] << "     " << entryNumRange_include[1] << "\n";
-	cout << reader->GetCurrentEntry();
-}*/
+	cout << readerHits->GetCurrentEntry();
+}

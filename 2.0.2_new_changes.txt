@@ -7,13 +7,6 @@ REMEMBER TO INSTALL PYBAR!
 ENABLING THE HIT TABLE:
 	In analyze_raw_data.py, line 153 "self.create_hit_table = False" set to True in host/pybar/analysis
 
-//ENABLING THE CLUSTER TABLES AND HISTOGRAMS: // testing this out -> nvm, doesnt help
-//	In the same file as above:
-//	self.create_cluster_hit_table = True # was False
-//  self.create_cluster_table = True # was False
-//  self.create_cluster_size_hist = True # was False
-//  self.create_cluster_tot_hist = True # was False 
-
 IGNORE RX 8B10B ERRORS:
 	In the particular scan that you want (ex: stop mode):
 	self.fifo_readout.start(reset_sram_fifo=False, clear_buffer=True, callback=self.handle_data, errback=None, no_data_timeout=self.no_data_timeout) # was errback=self.handle_err; ignore RX 8b10b errors

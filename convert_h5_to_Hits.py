@@ -209,13 +209,14 @@ def convert_two_hit_tables(input_filename, output_filename, h5_file_num):
 
         # load the two desired tables:
         hits = in_file_h5.root.Hits
-        myHit = init_hit_struct()
+        # myHit = init_hit_struct()
 
         meta = in_file_h5.root.meta_data
-        myMeta = init_meta_struct()
+        # myMeta = init_meta_struct()
 
         # assign the myExtraCalc struct
-        myExtraCalc = init_extracalc_struct()
+        # myExtraCalc = init_extracalc_struct()
+
         
         # create ttree using table structure:
         out_file_root = TFile(output_filename, 'RECREATE')
@@ -345,13 +346,21 @@ def convert_hit_table_fast(input_filename, output_filename):
         out_file_root.Close()
 """
 
+myHit = init_hit_struct()
+myMeta = init_meta_struct()
+myExtraCalc = init_extracalc_struct()
+
 if __name__ == "__main__":
     path_to_folder = '/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new'
-    h5_file_num = 133    # CHOOSE THIS
+    
+    h5_file_nums = [125, 129]    # CHOOSE THIS
 
     # chose this parameter as big as possible to increase speed, but not too 
     # big otherwise program crashed:
     chunk_size = 50000  
     
-    convert_two_hit_tables(path_to_folder + '/' + str(h5_file_num) + '_module_202_new_stop_mode_ext_trigger_scan_interpreted.h5', path_to_folder + '/' + str(h5_file_num) + '_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root', h5_file_num)
+    for h5_file_num in h5_file_nums:
+        print("Converting h5 file num: " + str(h5_file_num))
+
+        convert_two_hit_tables(path_to_folder + '/' + str(h5_file_num) + '_module_202_new_stop_mode_ext_trigger_scan_interpreted.h5', path_to_folder + '/' + str(h5_file_num) + '_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root', h5_file_num)
     

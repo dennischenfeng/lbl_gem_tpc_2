@@ -21,9 +21,9 @@ void aggregate_Hits_and_EventsCR() {
 
 
 	// CHOOSE THESE 
-	int aggrFileNum = 1;
-	const int numFiles = 2; 
-	const int fileNums[numFiles] = {132, 133}; // h5 file nums of the Hits files (and corresponding EventsCR files) that will be aggregated into the Aggregate files
+	int aggrFileNum = 4;
+	const int numFiles = 8; 
+	const int fileNums[numFiles] = {118,122,125,129,130,131,132, 133}; // h5 file nums of the Hits files (and corresponding EventsCR files) that will be aggregated into the Aggregate files
 
 
 	// Make files, trees, and branches for AggrHits and AggrEventsCR
@@ -67,6 +67,7 @@ void aggregate_Hits_and_EventsCR() {
 	Double_t length_track_AggrEventsCR = 0;
 	Double_t sum_tots_div_by_length_track_AggrEventsCR = 0;
 	Double_t sum_squares_div_byDoF_AggrEventsCR = 0;
+	Double_t zenith_angle_AggrEventsCR = 0;
 	T_AggrEventsCR->Branch("h5_file_num", &h5_file_num_AggrEventsCR, "h5_file_num/i");
 	T_AggrEventsCR->Branch("SM_event_num", &SM_event_num_AggrEventsCR, "SM_event_num/L");
 	T_AggrEventsCR->Branch("num_hits", &num_hits_AggrEventsCR, "num_hits/i");
@@ -84,6 +85,7 @@ void aggregate_Hits_and_EventsCR() {
 	T_AggrEventsCR->Branch("length_track", &length_track_AggrEventsCR, "length_track/D");
 	T_AggrEventsCR->Branch("sum_tots_div_by_length_track", &sum_tots_div_by_length_track_AggrEventsCR, "sum_tots_div_by_length_track/D");
 	T_AggrEventsCR->Branch("sum_squares_div_by_DoF", &sum_squares_div_byDoF_AggrEventsCR, "sum_squares_div_by_DoF/D");
+	T_AggrEventsCR->Branch("zenith_angle", &zenith_angle_AggrEventsCR, "zenith_angle/D");
 
 	// Assign the values to the vector fileNames
 	vector< vector<string> > fileNames;
@@ -128,6 +130,7 @@ void aggregate_Hits_and_EventsCR() {
 		TTreeReaderValue<Double_t> length_track(*readerEventsCR, "length_track");
 		TTreeReaderValue<Double_t> sum_tots_div_by_length_track(*readerEventsCR, "sum_tots_div_by_length_track");
 		TTreeReaderValue<Double_t> sum_squares_div_by_DoF(*readerEventsCR, "sum_squares_div_by_DoF");
+		TTreeReaderValue<Double_t> zenith_angle(*readerEventsCR, "zenith_angle");
 
 		while (readerEventsCR->Next()) { // for every SM Event in the EventsCR file
 			if (readerEventsCR->GetCurrentEntry() == 0) {
@@ -153,6 +156,7 @@ void aggregate_Hits_and_EventsCR() {
 				length_track_AggrEventsCR = *length_track;
 				sum_tots_div_by_length_track_AggrEventsCR = *sum_tots_div_by_length_track;
 				sum_squares_div_byDoF_AggrEventsCR = *sum_squares_div_by_DoF;
+				zenith_angle_AggrEventsCR = *zenith_angle;
 				T_AggrEventsCR->Fill();
 
 				// Now, fill in T_AggrHits
