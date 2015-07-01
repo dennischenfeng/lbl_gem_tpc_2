@@ -10,10 +10,11 @@ The TTree contains: (name of branch, root type descriptor, root type)
 3. tot, b, UChar_t
 4. relative_BCID, b, UChar_t
 5. SM_event_num, L, Long64_t
-6. x, D, Double_t (in mm)
-7. y, D, Double_t 
-8. z, D, Double_t
-9. s, D, Double_t (s is 0 at mean XYZ, direction is along the event's best fit line, positive in the direction of increasing z; this script by itself doesn't create the s branch, but convert_Hits_to_EventsCR.cpp does)
+6. SM_rel_BCID, i, UInt_t
+7. x, D, Double_t (in mm)
+8. y, D, Double_t 
+9. z, D, Double_t
+10. s, D, Double_t (s is 0 at mean XYZ, direction is along the event's best fit line, positive in the direction of increasing z; this script by itself doesn't create the s branch, but convert_Hits_to_EventsCR.cpp does)
 
 Depending on whether you want to convert self_trigger scans or ext_trigger_stop_mode scans, you may need to choose which init_hit_struct() to use.
 
@@ -92,6 +93,7 @@ def init_extracalc_struct():
         "struct ExtraCalcInfo{\
         UInt_t h5_file_num;\
         Long64_t SM_event_num;\
+        UInt_t SM_rel_BCID;\
         Double_t x;\
         Double_t y;\
         Double_t z;\
@@ -181,6 +183,7 @@ def init_tree_from_table(hit_table, meta_table, chunk_size=1, hit_tree_entry=Non
     tree.Branch('tot', 'NULL' if hit_tree_entry is None else AddressOf(hit_tree_entry, 'tot'), 'tot' + '[n_entries]/' + 'b' if chunk_size > 1 else 'tot' + '/' + 'b')
     tree.Branch('relative_BCID', 'NULL' if hit_tree_entry is None else AddressOf(hit_tree_entry, 'relative_BCID'), 'relative_BCID' + '[n_entries]/' + 'b' if chunk_size > 1 else 'relative_BCID' + '/' + 'b')
     tree.Branch('SM_event_num', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'SM_event_num'), 'SM_event_num' + '[n_entries]/' + 'L' if chunk_size > 1 else 'SM_event_num' + '/' + 'L')
+    tree.Branch('SM_rel_BCID', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'SM_rel_BCID'), 'SM_rel_BCID' + '[n_entries]/' + 'i' if chunk_size > 1 else 'SM_rel_BCID' + '/' + 'i')
     tree.Branch('x', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'x'), 'x' + '[n_entries]/' + 'D' if chunk_size > 1 else 'x' + '/' + 'D')
     tree.Branch('y', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'y'), 'y' + '[n_entries]/' + 'D' if chunk_size > 1 else 'y' + '/' + 'D')
     tree.Branch('z', 'NULL' if hit_tree_entry is None else AddressOf(extracalc_tree_entry, 'z'), 'z' + '[n_entries]/' + 'D' if chunk_size > 1 else 'z' + '/' + 'D')
@@ -286,10 +289,11 @@ def convert_two_hit_tables(input_filename, output_filename, h5_file_num):
 
             myExtraCalc.h5_file_num = h5_file_num
             myExtraCalc.SM_event_num = int(hit['event_number']) / 16
+            smRelBCID = (int(hit['event_number']) - (int(hit['event_number'])/16) * 16) * 16 + int(hit['relative_BCID']) # Range: 0 - 255
+            myExtraCalc.SM_rel_BCID = smRelBCID;
+
             myExtraCalc.x = (int(hit['column']) - 1) * 0.25 + 0.001 # + 0.001 is to get rid of any tiny roundoff errors due to using a doubles
             myExtraCalc.y = - (int(hit['row']) - 1) * 0.05 - 0.001 # minus sign because y is negative
-            
-            smRelBCID = (int(hit['event_number']) - (int(hit['event_number'])/16) * 16) * 16 + int(hit['relative_BCID']) # Range: 0 - 255
             myExtraCalc.z = (smRelBCID * 0.16) + 0.001 # Drift speed: 0.16 mm per BCID
             
             # Fill the tree that includes data from both trees. 
@@ -353,7 +357,7 @@ myExtraCalc = init_extracalc_struct()
 if __name__ == "__main__":
     path_to_folder = '/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new'
     
-    h5_file_nums = [125, 129]    # CHOOSE THIS
+    h5_file_nums = [118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 151,153,154,155,159,166,174,176,183,184]    # CHOOSE THIS
 
     # chose this parameter as big as possible to increase speed, but not too 
     # big otherwise program crashed:

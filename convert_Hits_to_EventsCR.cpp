@@ -31,6 +31,7 @@ void convert_Hits_to_EventsCR() {
 	16. sum_tots_div_by_length_track, D, Double_t
 	17. sum_squares_div_by_DoF, D, Double_t
 	18. zenith_angle, D, Double_t (zenith angle of track, in radians)
+	19. duration, i, UInt_t (time duration of event, in units of BCIDs)
 	
 
 	Note: to add a new branch:
@@ -46,10 +47,9 @@ void convert_Hits_to_EventsCR() {
 	gROOT->Reset(); 
 
 	
-	// UInt_t h5_file_num_input = 133;    // CHOOSE THIS
 
-	const int numFiles = 8; // CHOOSE THESE
-	const int fileNums[numFiles] = {118,122,125,129,130,131,132,133};
+	const int numFiles = 26; // CHOOSE THESE
+	const int fileNums[numFiles] = {118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 151,153,154,155,159,166,174,176,183,184};
 	// const int fileNums[numFiles] = {133};
 
 
@@ -66,6 +66,7 @@ void convert_Hits_to_EventsCR() {
 		TTreeReaderValue<UChar_t> tot(*reader, "tot");
 		TTreeReaderValue<UChar_t> relative_BCID(*reader, "relative_BCID");
 		TTreeReaderValue<Long64_t> SM_event_num(*reader, "SM_event_num");
+		TTreeReaderValue<UInt_t> SM_rel_BCID(*reader, "SM_rel_BCID");
 		TTreeReaderValue<Double_t> x(*reader, "x");
 		TTreeReaderValue<Double_t> y(*reader, "y");
 		TTreeReaderValue<Double_t> z(*reader, "z");
@@ -103,6 +104,7 @@ void convert_Hits_to_EventsCR() {
 		Double_t sum_tots_div_by_length_track = 0;
 		Double_t sum_squares_div_by_DoF = 0;
 		Double_t zenith_angle = 0;
+		UInt_t duration = 0;
 
 		t->Branch("h5_file_num", &h5_file_num_EventsCR, "h5_file_num/i");
 		t->Branch("SM_event_num", &SM_event_num_EventsCR, "SM_event_num/L");
@@ -123,6 +125,7 @@ void convert_Hits_to_EventsCR() {
 		t->Branch("sum_tots_div_by_length_track", &sum_tots_div_by_length_track, "sum_tots_div_by_length_track/D");
 		t->Branch("sum_squares_div_by_DoF", &sum_squares_div_by_DoF, "sum_squares_div_by_DoF/D");
 		t->Branch("zenith_angle", &zenith_angle, "zenith_angle/D");
+		t->Branch("duration", &duration, "duration/i");
 
 
 
@@ -142,6 +145,8 @@ void convert_Hits_to_EventsCR() {
 			int startEntryNum = 0;
 			int endEntryNum = 0;
 			bool lastEvent = false;
+			int startRelBCID = 0;
+			int endRelBCID_include = 0; // endRelBCID_include is included in calculating the duration
 
 			// Declaring some important output values for the current graph and/or line fit
 			UInt_t numEntries = 0;
@@ -288,6 +293,21 @@ void convert_Hits_to_EventsCR() {
 				}
 				fractionInsideSphere /= endEntryNum - startEntryNum;
 
+				// getting the startRelBCID and endRelBCID_include
+				reader->SetEntry(startEntryNum);
+				for (int i = 0; i < endEntryNum - startEntryNum; i++) {
+					if (i == 0) {
+						startRelBCID = *SM_rel_BCID;
+						endRelBCID_include = *SM_rel_BCID;
+					} else {
+						if (*SM_rel_BCID > endRelBCID_include) {
+							endRelBCID_include = *SM_rel_BCID;
+						}
+					}
+					reader->Next();
+				}
+
+
 				// Fill the TTree, fill in event_status after all the others
 				if (eventStatus == 1) { // if fit failed, these variables are 0
 					param0 = 0;
@@ -316,13 +336,13 @@ void convert_Hits_to_EventsCR() {
 				sum_tots_div_by_length_track = sumTots / lengthTrack;
 				sum_squares_div_by_DoF = sumSquares / (numEntries - 2);
 				zenith_angle = TMath::ATan(sqrt(pow(param1, 2) + pow(param3, 2)));
+				duration = endRelBCID_include - startRelBCID + 1;
 
 				if (eventStatus != 1) { // if fit didn't fail
 					if (num_hits < 50 
 						|| sum_squares_div_by_DoF >= 0.5 
 						|| fraction_inside_sphere >= 0.8
-						|| length_track < 3.0
-						|| sum_tots_div_by_length_track >= 150) 
+						|| length_track < 3.0) 
 					
 					{ // if bad event
 						eventStatus = 2;
@@ -331,7 +351,7 @@ void convert_Hits_to_EventsCR() {
 				event_status = eventStatus;
 
 				t->Fill();
-				cout << "SM Event " << smEventNum << ": event_status: " << event_status << "\n";
+				// cout << "SM Event " << smEventNum << ": event_status: " << event_status << "\n";
 			}
 			smEventNum++;
 		}

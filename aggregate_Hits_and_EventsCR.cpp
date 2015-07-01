@@ -14,6 +14,14 @@ void aggregate_Hits_and_EventsCR() {
 	Used when source is: cosmic rays (CR).
 	
 	Note: Aggr means Aggregate.
+	
+	Note: To add a branch:
+	- add branch variable for AggrHits/AggrEventsCR
+	- add branch for AggrHits/AggrEventsCR
+	- add TTreeReaderValue for Hits/EventsCR
+	- assign variable in the main loop for AggrHits/AggrEventsCR
+
+
 
 	Author: Dennis Feng	
 	***/
@@ -21,9 +29,9 @@ void aggregate_Hits_and_EventsCR() {
 
 
 	// CHOOSE THESE 
-	int aggrFileNum = 5;
-	const int numFiles = 8; 
-	const int fileNums[numFiles] = {118,122,125,129,130,131,132, 133}; // h5 file nums of the Hits files (and corresponding EventsCR files) that will be aggregated into the Aggregate files
+	int aggrFileNum = 16;
+	const int numFiles = 26; 
+	const int fileNums[numFiles] = {118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 151,153,154,155,159,166,174,176,183,184}; // h5 file nums of the Hits files (and corresponding EventsCR files) that will be aggregated into the Aggregate files
 
 
 	// Make files, trees, and branches for AggrHits and AggrEventsCR
@@ -34,6 +42,7 @@ void aggregate_Hits_and_EventsCR() {
 	UChar_t tot_AggrHits = 0;
 	UChar_t relative_BCID_AggrHits = 0;
 	Long64_t SM_event_num_AggrHits = 0;
+	UInt_t SM_rel_BCID_AggrHits = 0;
 	Double_t x_AggrHits = 0;
 	Double_t y_AggrHits = 0;
 	Double_t z_AggrHits = 0;
@@ -43,6 +52,7 @@ void aggregate_Hits_and_EventsCR() {
 	T_AggrHits->Branch("tot", &tot_AggrHits, "tot/b");
 	T_AggrHits->Branch("relative_BCID", &relative_BCID_AggrHits, "relative_BCID/b");
 	T_AggrHits->Branch("SM_event_num", &SM_event_num_AggrHits, "SM_event_num/L");
+	T_AggrHits->Branch("SM_rel_BCID", &SM_rel_BCID_AggrHits, "SM_rel_BCID/i");
 	T_AggrHits->Branch("x", &x_AggrHits, "x/D");
 	T_AggrHits->Branch("y", &y_AggrHits, "y/D");
 	T_AggrHits->Branch("z", &z_AggrHits, "z/D");
@@ -68,6 +78,7 @@ void aggregate_Hits_and_EventsCR() {
 	Double_t sum_tots_div_by_length_track_AggrEventsCR = 0;
 	Double_t sum_squares_div_byDoF_AggrEventsCR = 0;
 	Double_t zenith_angle_AggrEventsCR = 0;
+	UInt_t duration_AggrEventsCR = 0;
 	T_AggrEventsCR->Branch("h5_file_num", &h5_file_num_AggrEventsCR, "h5_file_num/i");
 	T_AggrEventsCR->Branch("SM_event_num", &SM_event_num_AggrEventsCR, "SM_event_num/L");
 	T_AggrEventsCR->Branch("num_hits", &num_hits_AggrEventsCR, "num_hits/i");
@@ -86,6 +97,7 @@ void aggregate_Hits_and_EventsCR() {
 	T_AggrEventsCR->Branch("sum_tots_div_by_length_track", &sum_tots_div_by_length_track_AggrEventsCR, "sum_tots_div_by_length_track/D");
 	T_AggrEventsCR->Branch("sum_squares_div_by_DoF", &sum_squares_div_byDoF_AggrEventsCR, "sum_squares_div_by_DoF/D");
 	T_AggrEventsCR->Branch("zenith_angle", &zenith_angle_AggrEventsCR, "zenith_angle/D");
+	T_AggrEventsCR->Branch("duration", &duration_AggrEventsCR, "duration/i");
 
 	// Assign the values to the vector fileNames
 	vector< vector<string> > fileNames;
@@ -107,6 +119,7 @@ void aggregate_Hits_and_EventsCR() {
 		TTreeReaderValue<UChar_t> tot(*readerHits, "tot");
 		TTreeReaderValue<UChar_t> relative_BCID(*readerHits, "relative_BCID");
 		TTreeReaderValue<Long64_t> SM_event_num_Hits(*readerHits, "SM_event_num");
+		TTreeReaderValue<UInt_t> SM_rel_BCID(*readerHits, "SM_rel_BCID");
 		TTreeReaderValue<Double_t> x(*readerHits, "x");
 		TTreeReaderValue<Double_t> y(*readerHits, "y");
 		TTreeReaderValue<Double_t> z(*readerHits, "z");
@@ -131,7 +144,9 @@ void aggregate_Hits_and_EventsCR() {
 		TTreeReaderValue<Double_t> sum_tots_div_by_length_track(*readerEventsCR, "sum_tots_div_by_length_track");
 		TTreeReaderValue<Double_t> sum_squares_div_by_DoF(*readerEventsCR, "sum_squares_div_by_DoF");
 		TTreeReaderValue<Double_t> zenith_angle(*readerEventsCR, "zenith_angle");
+		TTreeReaderValue<UInt_t> duration(*readerEventsCR, "duration");
 
+		// Main loop
 		while (readerEventsCR->Next()) { // for every SM Event in the EventsCR file
 			if (readerEventsCR->GetCurrentEntry() == 0) {
 				continue; // skip the entry num 0, because it probably contains no data
@@ -157,6 +172,7 @@ void aggregate_Hits_and_EventsCR() {
 				sum_tots_div_by_length_track_AggrEventsCR = *sum_tots_div_by_length_track;
 				sum_squares_div_byDoF_AggrEventsCR = *sum_squares_div_by_DoF;
 				zenith_angle_AggrEventsCR = *zenith_angle;
+				duration_AggrEventsCR = *duration;
 				T_AggrEventsCR->Fill();
 
 				// Now, fill in T_AggrHits
@@ -172,6 +188,7 @@ void aggregate_Hits_and_EventsCR() {
 					tot_AggrHits = *tot;
 					relative_BCID_AggrHits = *relative_BCID;
 					SM_event_num_AggrHits = *SM_event_num_Hits;
+					SM_rel_BCID_AggrHits = *SM_rel_BCID;
 					x_AggrHits = *x;
 					y_AggrHits = *y;
 					z_AggrHits = *z;

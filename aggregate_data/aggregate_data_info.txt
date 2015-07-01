@@ -1,5 +1,44 @@
-Aggr #, Filter, Other info
+Aggr #. File Nums, Filter, Other info
 
-2. first set of "good" event criteria
-3. first set of "good" event criteria, no events with sumtots/lengthtrack larger than 150, includes zenith angle in EventsCR 
-4. 2nd set of criteria 
+Notes:
+1st set of criteria: (num_hits < 50 
+						|| sum_squares_div_by_DoF >= 2.0 
+						|| fraction_inside_sphere >= 0.8
+						|| length_track < 3.0)
+
+2nd set of criteria: (num_hits < 50 
+						|| sum_squares_div_by_DoF >= 0.5 
+						|| fraction_inside_sphere >= 0.8
+						|| length_track < 3.0
+						|| sum_tots_div_by_length_track >= 150)
+
+2. 118,122,125,129,130,131,132,133, 1st set of "good" event criteria
+
+3. 118,122,125,129,130,131,132,133, 1st set of criteria, no events with sumtots/lengthtrack larger than 150, includes zenith angle in EventsCR 
+
+4. 118,122,125,129,130,131,132,133, 2nd set of criteria
+
+5. 137,139,142,143,144,147,148,150, 2nd set of criteria
+
+6. 118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 2nd set of criteria
+
+7. 118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 2nd set of criteria except sum_tots_div_by_length_track >= 60 instead of 150
+
+8. 118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 2nd set of criteria except sum_tots_div_by_length_track >= 30 instead of 150
+
+9. {151,153,154,155,159,166,174,176,183,184}, 2nd set of criteria except sum_tots_div_by_length_track >= 30 instead of 150
+
+
+10. {118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 151,153,154,155,159,166,174,176,183,184} 2nd set of criteria except sum_tots_div_by_length_track >= 30 instead of 150
+
+11. {118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 151,153,154,155,159,166,174,176,183,184} 2nd set of criteria except sum_tots_div_by_length_track >= 60 instead of 150
+
+12. {118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 151,153,154,155,159,166,174,176,183,184} 2nd set of criteria: sum_tots_div_by_length_track >= 150
+
+13. {118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 151,153,154,155,159,166,174,176,183,184} 2nd set of criteria except sum_tots_div_by_length_track >= 20
+
+14. {118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 151,153,154,155,159,166,174,176,183,184} 2nd set of criteria except sum_tots_div_by_length_track >= 10
+
+15. {118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 151,153,154,155,159,166,174,176,183,184} 2nd set of criteria except no filter on sum_tots_div_by_length_track
+
+16. {118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 151,153,154,155,159,166,174,176,183,184} 2nd set of criteria except no filter on sum_tots_div_by_length_track, added duration branch
