@@ -12,6 +12,17 @@ Notes:
 						|| length_track < 3.0
 						|| sum_tots_div_by_length_track >= 150)
 
+// Over 200 time bins
+3rd set of criteria: (num_hits < 50 
+						|| sum_squares_div_by_DoF >= 0.5
+						|| duration < 200)
+
+// Trying to get only the minimum ionizing muons and knock-on electrons
+4th set of criteria: (num_hits < 50 
+						|| sum_squares_div_by_DoF >= 0.5
+						|| length_track < 5.0
+						|| sum_tots_div_by_length_track >= 150)
+
 2. 118,122,125,129,130,131,132,133, 1st set of "good" event criteria
 
 3. 118,122,125,129,130,131,132,133, 1st set of criteria, no events with sumtots/lengthtrack larger than 150, includes zenith angle in EventsCR 
@@ -42,3 +53,11 @@ Notes:
 15. {118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 151,153,154,155,159,166,174,176,183,184} 2nd set of criteria except no filter on sum_tots_div_by_length_track
 
 16. {118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 151,153,154,155,159,166,174,176,183,184} 2nd set of criteria except no filter on sum_tots_div_by_length_track, added duration branch
+
+17. {118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 151,153,154,155,159,166,174,176,183,184, 187,188,189,191,194,198,199,203,208,211,213,218,219,220,224,226,229,231,232,236,241,243,244,245,246,249,250,251} 3rd set of crit (trying to see only the events that span over 200 time bins)
+
+18. {118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 151,153,154,155,159,166,174,176,183,184, 187,188,189,191,194,198,199,203,208,211,213,218,219,220,224,226,229,231,232,236,241,243,244,245,246,249,250,251} 3rd set of crit except no filter on duration
+
+19. {118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 151,153,154,155,159,166,174,176,183,184, 187,188,189,191,194,198,199,203,208,211,213,218,219,220,224,226,229,231,232,236,241,243,244,245,246,249,250,251} 4th set of crit
+
+20. {118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 151,153,154,155,159,166,174,176,183,184, 187,188,189,191,194,198,199,203,208,211,213,218,219,220,224,226,229,231,232,236,241,243,244,245,246,249,250,251} 4th set of crit except chi-square is now 0.2

@@ -48,8 +48,8 @@ void convert_Hits_to_EventsCR() {
 
 	
 
-	const int numFiles = 26; // CHOOSE THESE
-	const int fileNums[numFiles] = {118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 151,153,154,155,159,166,174,176,183,184};
+	const int numFiles = 54; // CHOOSE THESE
+	const int fileNums[numFiles] = {118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 151,153,154,155,159,166,174,176,183,184, 187,188,189,191,194,198,199,203,208,211,213,218,219,220,224,226,229,231,232,236,241,243,244,245,246,249,250,251};
 	// const int fileNums[numFiles] = {133};
 
 
@@ -340,11 +340,11 @@ void convert_Hits_to_EventsCR() {
 
 				if (eventStatus != 1) { // if fit didn't fail
 					if (num_hits < 50 
-						|| sum_squares_div_by_DoF >= 0.5 
-						|| fraction_inside_sphere >= 0.8
-						|| length_track < 3.0) 
+						|| sum_squares_div_by_DoF >= 0.2
+						|| length_track < 5.0
+						|| sum_tots_div_by_length_track >= 150) 
 					
-					{ // if bad event
+					{ // mark this as a bad event
 						eventStatus = 2;
 					}
 				}

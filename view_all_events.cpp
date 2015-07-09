@@ -18,12 +18,13 @@ void view_all_events() {
 
 	// Setting up files, treereaders, histograms
 	string file_kind = "aggr"; // string that is either "aggr" or "non_aggr" to indicate whether or not its an aggregate file pair or not.
-	int file_num_input = 16; // either an h5filenum or aggrfilenum
-	string view_option = "1"; // choose what to view:
+	int file_num_input = 20; // either an h5filenum or aggrfilenum
+	string view_option = "5"; // choose what to view:
 	// "1" or "zenith": zenith angle distribution
 	// "2" or "tot_per_length": sum_tots_div_by_length_track distribution
 	// "3" or "zenith_vs_totperlength": graph
 	// "4" or "duration": duration distr
+	// "5" or "cosine_zenith": cos theta distribution
 
 	string file_string = ""; // ex: "AggrFileNum 3"
 	TFile *fileHits;
@@ -100,6 +101,10 @@ void view_all_events() {
 	h_duration->GetXaxis()->SetTitle("Duration (in BCIDs)");
 	h_duration->GetYaxis()->SetTitle("Count (events)");
 
+	TH1F *h_cos_zenith = new TH1F("h_cos_zenith", ("Cosine of Zenith Angle Distr for " + file_string).c_str(), 20, 0, 1);
+	h_zenith->GetXaxis()->SetTitle("Cos of Zenith angle");
+	h_zenith->GetYaxis()->SetTitle("Count (events)");
+
 
 	int i = 0; // index for each entry in readerEventCR
 	// Main Loop (loops for every entry in readerEventsCR)
@@ -128,7 +133,9 @@ void view_all_events() {
 			g_zenith_vs_totperlength->SetPoint(i, *sum_tots_div_by_length_track, *zenith_angle);
 		} else if (view_option.compare("duration") == 0 || view_option.compare("4") == 0) {
 			h_duration->Fill(*duration);
-		} 
+		} else if (view_option.compare("cos_zenith") == 0 || view_option.compare("5") == 0) {
+			h_cos_zenith->Fill(TMath::Cos(*zenith_angle));
+		}
 		
 		i++;
 	}
@@ -145,6 +152,8 @@ void view_all_events() {
 		g_zenith_vs_totperlength->Draw();
 	} else if (view_option.compare("duration") == 0 || view_option.compare("4") == 0) {
 		h_duration->Draw("COLZ");
+	} else if (view_option.compare("cos_zenith") == 0 || view_option.compare("5") == 0) {
+		h_cos_zenith->Draw("COLZ");
 	} else {
 		cout << "Error: Input view_option is not valid.\n";
 	}

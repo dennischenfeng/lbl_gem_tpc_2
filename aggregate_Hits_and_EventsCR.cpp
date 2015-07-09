@@ -29,9 +29,9 @@ void aggregate_Hits_and_EventsCR() {
 
 
 	// CHOOSE THESE 
-	int aggrFileNum = 16;
-	const int numFiles = 26; 
-	const int fileNums[numFiles] = {118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 151,153,154,155,159,166,174,176,183,184}; // h5 file nums of the Hits files (and corresponding EventsCR files) that will be aggregated into the Aggregate files
+	int aggrFileNum = 20;
+	const int numFiles = 54; 
+	const int fileNums[numFiles] = {118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 151,153,154,155,159,166,174,176,183,184, 187,188,189,191,194,198,199,203,208,211,213,218,219,220,224,226,229,231,232,236,241,243,244,245,246,249,250,251}; // h5 file nums of the Hits files (and corresponding EventsCR files) that will be aggregated into the Aggregate files
 
 
 	// Make files, trees, and branches for AggrHits and AggrEventsCR
