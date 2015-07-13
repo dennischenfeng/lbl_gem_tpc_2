@@ -25,7 +25,7 @@ void convert_Hits_to_EventsCR() {
 	11. line_fit_param3, D, Double_t (dy/dz)
 	12. sum_of_squares, D, Double_t (same as chi square with error = 1 for all pts)
 	
-	13. event_status, i, UInt_t (0 if good event, 1 if fit failed, 2 if didn't meet "good" event criteria)
+	13. event_status, i, UInt_t (0 if good event, 1 if fit failed, 2 if didn't meet "good" event criteria, 3 if noise burst or its an event that occurred after a noise burst (after noise burst means potentially unreliable time bins))
 	14. fraction_inside_sphere, D, Double_t (fraction of the hits that are within a sphere of radius 1 centered at the mean; if this is close to 1, it means the hits are like a dense blob instead of a long streak)
 	15. length_track, D, Double_t (length of track, in mm)
 	16. sum_tots_div_by_length_track, D, Double_t
@@ -41,6 +41,9 @@ void convert_Hits_to_EventsCR() {
 	- *if needed, add to list of important output values at the start of while loop
 	- put in calculations for value
 	- assign the branch variable at the end of the while loop
+	
+	Note: you can also change the criteria for a bad event (event_status = 2) 
+	- search this script for "criteria for good event"
 
 	Author: Dennis Feng	
 	***/
@@ -48,8 +51,8 @@ void convert_Hits_to_EventsCR() {
 
 	
 
-	const int numFiles = 54; // CHOOSE THESE
-	const int fileNums[numFiles] = {118,122,125,129,130,131,132,133, 137,139,142,143,144,147,148,150, 151,153,154,155,159,166,174,176,183,184, 187,188,189,191,194,198,199,203,208,211,213,218,219,220,224,226,229,231,232,236,241,243,244,245,246,249,250,251};
+	const int numFiles = 82; // CHOOSE THESE
+	const int fileNums[numFiles] = {274,275,276,277,278,279,280,281,282,283,284,285,286,287,288,289, 291, 293,294,295,296,297,298,299,300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317,318,319,320,321,322,323,324,325,326,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345, 347,348,349,350,351,352,353,354,355,356,357, 360};
 	// const int fileNums[numFiles] = {133};
 
 
@@ -137,6 +140,7 @@ void convert_Hits_to_EventsCR() {
 		// Variables used to loop the main loop
 		bool endOfReader = false; // if reached end of the reader
 		Long64_t smEventNum = 1; // the current SM-event, start at 1
+		bool noiseBurstOccurred  = false; // if an event is a noise burst (>3000 events), then mark that event as well as every event occurring after it as a bad event
 		t->Fill(); // fills SM Event 0 with all zeroes. Assumes there's nothing in this event, which is probably true. Also assumes smEventNum starts at 1.
 		
 		// Main Loop (loops for every smEventNum)
@@ -338,16 +342,23 @@ void convert_Hits_to_EventsCR() {
 				zenith_angle = TMath::ATan(sqrt(pow(param1, 2) + pow(param3, 2)));
 				duration = endRelBCID_include - startRelBCID + 1;
 
-				if (eventStatus != 1) { // if fit didn't fail
+				if (num_hits >= 3000) { // 3000 hits on one event is a noice burst
+					noiseBurstOccurred = true;
+					eventStatus = 3;
+				} else if (noiseBurstOccurred) {
+					eventStatus = 3;
+				} else if (eventStatus != 1) { // if line fit didn't fail, now apply criteria for good events
+					// Criteria for good event
 					if (num_hits < 50 
-						|| sum_squares_div_by_DoF >= 0.2
+						|| sum_squares_div_by_DoF >= 0.5
 						|| length_track < 5.0
-						|| sum_tots_div_by_length_track >= 150) 
-					
+						|| sum_tots_div_by_length_track >= 150
+						|| duration < 200) 
 					{ // mark this as a bad event
 						eventStatus = 2;
 					}
 				}
+
 				event_status = eventStatus;
 
 				t->Fill();

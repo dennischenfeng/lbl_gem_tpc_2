@@ -14,15 +14,24 @@ void view_individual_events() {
 	Displays an 3D occupancy plot for each SM Event (stop mode event). The h5_file_num chosen must have working Hits and EventsCR files (_Hits.root and _EventsCR.root files).
 
 	Can choose which SM event to start at. (find "CHOOSE THIS" in this script)
+
+	Note: to add a new view_option:
+	- add an info comment about it under "choose what to view"
+	- if its a histogram, initialize the hist right before the main loop
+	- reset hist
+	- under the for loop, fill in the hist
+	- add another "else if" statement, to draw the hist
+
 	***/
 	gROOT->Reset();
 
 	// Setting up files, treereaders, histograms
 	string file_kind = "aggr"; // string that is either "aggr" or "non_aggr" to indicate whether or not its an aggregate file pair or not.
-	int file_num_input = 19;
-	string view_option = "1"; // choose what to view:
+	int file_num_input = 22;
+	string view_option = "3"; // choose what to view:
 	// "1" or "3d": view the events with their 3d reconstruction and line fit
 	// "2" or "SM_rel_BCID": numHits per SMRelBCID with the 3d reconstruction
+	// "3" or "sum_tots_per_length": running average of sumTots per 2mm
 
 
 	TFile *fileHits;
@@ -93,6 +102,11 @@ void view_individual_events() {
 	h_SM_rel_BCID->GetXaxis()->SetTitle("Stop Mode Relative BCID (BCIDs)");
 	h_SM_rel_BCID->GetYaxis()->SetTitle("Count (hits)");
 
+	TH1F *h_sum_tots_per_length = new TH1F("h_sum_tots_per_length", "SumTots of events within 2 mm intervals", 400, -40, 40); // intervals
+	h_sum_tots_per_length->GetXaxis()->SetTitle("s (mm)");
+	h_sum_tots_per_length->GetYaxis()->SetTitle("Count (hits)");
+
+
 
 	bool quit = false; // if pressed q
 	
@@ -116,14 +130,25 @@ void view_individual_events() {
 		TGraph2D *graph_3d = new TGraph2D(); // create a new TGraph to refresh; the graph_3d is the 3d plot, the h_2d_occupancy is the 2d plot.
 		h_2d_occupancy->Reset(); // must do reset for histograms, cannot create a new hist to refresh it
 		h_SM_rel_BCID->Reset();
+		h_sum_tots_per_length->Reset();
 
-		// Fill graph_3d and h_2d_occupancy with points and set title and axes
+		// Fill in graphs and hists with points and set title and axes
 		readerHits->SetEntry(entryNumRange_include[0]);
+		double minS = *s; // the lowest s in the event
+		double maxS = *s + *length_track; // the highest s in the event
 		for (int i = 0; i < entryNumRange_include[1] - entryNumRange_include[0] + 1; i++) {
 			graph_3d->SetPoint(i, (*x - 0.001), (*y + 0.001), (*z - 0.001));
 			
 			h_2d_occupancy->Fill(*x, *y, *SM_rel_BCID);
 			h_SM_rel_BCID->Fill(*SM_rel_BCID);
+
+			// fill in for h_sum_tots_per_length
+			for (double currS = *s - 5.0; currS <= *s + 5.0; currS += 0.2) { // interval is 4 mm, increment is 0.5mm
+				if (currS >= minS + 5.0 && currS <= maxS - 5.0) { // cut off the first 2.0 and the last 2.0mm
+					h_sum_tots_per_length->Fill(currS, *tot);
+				}
+			}
+
 			readerHits->Next();
 		}
 		
@@ -156,6 +181,9 @@ void view_individual_events() {
 		} else if (view_option.compare("SM_rel_BCID") == 0 || view_option.compare("2") == 0) {
 			pad2->SetRightMargin(0.25);
 			h_SM_rel_BCID->Draw("COLZ");
+		} else if (view_option.compare("sum_tots_per_length") == 0 || view_option.compare("3") == 0) {
+			pad2->SetRightMargin(0.25);
+			h_sum_tots_per_length->Draw("BAR");
 		} else {
 			cout << "Error: Input view_option is not valid.\n";
 		}
@@ -200,6 +228,7 @@ void view_individual_events() {
 		// cout << "Fraction inside sphere (1 mm radius): " << *fraction_inside_sphere << "\n";
 		cout << "Length of track: " << *length_track << "\n";
 		cout << "SumTots/Length: " << *sum_tots_div_by_length_track << "\n";
+		cout << "Event Status: " << *event_status << "\n";
 		
 
 

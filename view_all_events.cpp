@@ -18,7 +18,7 @@ void view_all_events() {
 
 	// Setting up files, treereaders, histograms
 	string file_kind = "aggr"; // string that is either "aggr" or "non_aggr" to indicate whether or not its an aggregate file pair or not.
-	int file_num_input = 20; // either an h5filenum or aggrfilenum
+	int file_num_input = 22; // either an h5filenum or aggrfilenum
 	string view_option = "5"; // choose what to view:
 	// "1" or "zenith": zenith angle distribution
 	// "2" or "tot_per_length": sum_tots_div_by_length_track distribution
@@ -102,8 +102,9 @@ void view_all_events() {
 	h_duration->GetYaxis()->SetTitle("Count (events)");
 
 	TH1F *h_cos_zenith = new TH1F("h_cos_zenith", ("Cosine of Zenith Angle Distr for " + file_string).c_str(), 20, 0, 1);
-	h_zenith->GetXaxis()->SetTitle("Cos of Zenith angle");
-	h_zenith->GetYaxis()->SetTitle("Count (events)");
+	h_cos_zenith->GetXaxis()->SetTitle("Cos of Zenith angle");
+	h_cos_zenith->GetYaxis()->SetTitle("Count (events)");
+	h_cos_zenith->GetYaxis()->SetRangeUser(0, 210);
 
 
 	int i = 0; // index for each entry in readerEventCR
