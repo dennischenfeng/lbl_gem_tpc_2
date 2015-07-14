@@ -1,5 +1,5 @@
 
-Date: 15/06/03
+Date: 15/07/13
 
 REMEMBER TO INSTALL PYBAR!
 	"python setup.py develop"
@@ -27,10 +27,10 @@ CONFIGURATIONS:
     Note: "target_threshold" sets the amount of charge needed for a pixel to sense a hit. "target_charge" and "target_tot" set how much charge will correspond to how much tot.
 
 HOMEMADE SCRIPTS FOLDER:
-	Created homemade_scripts folder in the main pybar software folder. Copied the contents from tag 2.0.2.
+	Created homemade_scripts folder in the main pybar software folder. Copied the contents from tag 2.0.2. Connected it with github.
 
 RUN_EXTRA_INFO.TXT:
-	In module_202_new folder, I created run_extra_info.txt to store info about runs, such as source and GEM voltage, Pcp (pressure), and other parameters.
+	In this folder, I created run_extra_info.txt to store info about runs, such as source and GEM voltage, Pcp (pressure), and other parameters.
 
 EXT TRIGGER STOP MODE:
 	In "scan_ext_trigger_stop_mode.py":

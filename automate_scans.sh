@@ -2,7 +2,7 @@
 # Runs a specified scan as many times as you want. Also adds to run_extra_info_txt the info that you specify.
 
 # OTHER_INFO="CR GEM-400 Pcp-756 scantime-180 maxtrig-4 (bulk CR events)"
-NUM_SCANS=1
+NUM_SCANS=5
 
 
 
@@ -11,7 +11,7 @@ NUM_SCANS=1
 
 
 
-cd /home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/scans
+cd /home/pixel/pybar/pybar_github/pybar/scans
 
 strindex() { #from glenn jackman on StackOverflow; finds index of first appearance of substring; used in this script to find LAST_NUM
   x="${1%%$2*}";

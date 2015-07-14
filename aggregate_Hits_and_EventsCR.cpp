@@ -29,13 +29,13 @@ void aggregate_Hits_and_EventsCR() {
 
 
 	// CHOOSE THESE 
-	int aggrFileNum = 22;
-	const int numFiles = 82; 
-	const int fileNums[numFiles] = {274,275,276,277,278,279,280,281,282,283,284,285,286,287,288,289, 291, 293,294,295,296,297,298,299,300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317,318,319,320,321,322,323,324,325,326,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345, 347,348,349,350,351,352,353,354,355,356,357, 360}; // h5 file nums of the Hits files (and corresponding EventsCR files) that will be aggregated into the Aggregate files
+	int aggrFileNum = 24;
+	const int numFiles = 5; 
+	const int fileNums[numFiles] = {167,168,169,170,171}; // h5 file nums of the Hits files (and corresponding EventsCR files) that will be aggregated into the Aggregate files
 
 
 	// Make files, trees, and branches for AggrHits and AggrEventsCR
-	TFile *f_AggrHits = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/homemade_scripts/aggregate_data/" + to_string(aggrFileNum) + "_module_202_new_AggrHits.root").c_str(), "RECREATE");
+	TFile *f_AggrHits = new TFile(("/home/pixel/pybar/pybar_github/pybar/homemade_scripts/aggregate_data/" + to_string(aggrFileNum) + "_module_1_AggrHits.root").c_str(), "RECREATE");
 	TTree *T_AggrHits = new TTree("Table", "Aggregate Hits Data");
 	UInt_t h5_file_num_AggrHits = 0;
 	Long64_t event_number_AggrHits = 0;
@@ -58,7 +58,7 @@ void aggregate_Hits_and_EventsCR() {
 	T_AggrHits->Branch("z", &z_AggrHits, "z/D");
 	T_AggrHits->Branch("s", &s_AggrHits, "s/D");
 
-	TFile *f_AggrEventsCR = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/homemade_scripts/aggregate_data/" + to_string(aggrFileNum) + "_module_202_new_AggrEventsCR.root").c_str(), "RECREATE");
+	TFile *f_AggrEventsCR = new TFile(("/home/pixel/pybar/pybar_github/pybar/homemade_scripts/aggregate_data/" + to_string(aggrFileNum) + "_module_1_AggrEventsCR.root").c_str(), "RECREATE");
 	TTree *T_AggrEventsCR = new TTree("Table", "Aggregate EventsCR Data");
 	UInt_t h5_file_num_AggrEventsCR = 0;
 	Long64_t SM_event_num_AggrEventsCR = 0;
@@ -103,8 +103,8 @@ void aggregate_Hits_and_EventsCR() {
 	vector< vector<string> > fileNames;
 	fileNames.resize(numFiles, vector<string>(2, ""));
 	for (int i = 0; i < numFiles; i++) {
-		fileNames[i][0] = "/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(fileNums[i]) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root";
-		fileNames[i][1] = "/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(fileNums[i]) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_EventsCR.root";
+		fileNames[i][0] = "/home/pixel/pybar/pybar_github/pybar/module_1/" + to_string(fileNums[i]) + "_module_1_stop_mode_ext_trigger_scan_interpreted_Hits.root";
+		fileNames[i][1] = "/home/pixel/pybar/pybar_github/pybar/module_1/" + to_string(fileNums[i]) + "_module_1_stop_mode_ext_trigger_scan_interpreted_EventsCR.root";
 	}
 
 	// Main loop

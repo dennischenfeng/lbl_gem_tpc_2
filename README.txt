@@ -1,4 +1,5 @@
 Author: Dennis Feng
+Date: 15/06/10
 
 Procedure to get the final calculated data files (called Events files, ex: EventsCR files):
 1. Run the desired scan (ex: stop mode scan), which will output an ..._interpreted.h5 file.

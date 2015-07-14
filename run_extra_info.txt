@@ -1,0 +1,52 @@
+Number, Source, GEM Voltage, Pressure, Other parameters to record
+
+// Testing 10 MHz: mio_10MHz.bit
+160 CR GEM-440 Pcp-756 (SM, scantime-180 maxtrig-50) // gathering data to see time bins
+...
+// testing 10 MHz: mio.bit
+167 CR GEM-440 Pcp-756 (SM, scantime-180 maxtrig-50) // 40 MHz
+...
+
+// tuning the chip to work with 12 MHz
+182 None GEM-0 Pcp-756 (analog) // std cfg file for 12 MHz, mio_12MHz
+183 None GEM-0 Pcp-756 (threshold) // std cfg file 12 MHz, mio_12MHz
+184 None GEM-0 Pcp-756 (tune) // std cfg file 12 MHz, mio_12MHz
+185 None GEM-0 Pcp-756 (analog) // cfg 184, mio_12MHz
+186 None GEM-0 Pcp-756 (tune) // cfg 184, mio_12MHz, 220, 9
+188 None GEM-0 Pcp-756 (analog) // cfg 186, mio_12MHz, 220
+
+
+189 None GEM-0 Pcp-756 (analog) // std cfg, mio, 375
+190 None GEM-0 Pcp-756 (tune) // std cfg, mio, 375, 9
+191 None GEM-0 Pcp-756 (analog) // cfg 190, mio, 375 -> good, peak at ToT 9
+192 None GEM-0 Pcp-756 (tune) // cfg 190, mio, 375, 15 
+194 None GEM-0 Pcp-756 (analog) // cfg 192, mio, 375
+195 None GEM-0 Pcp-756 (tune) // std cfg, mio, 375, 5
+196 None GEM-0 Pcp-756 (tune) // std cfg, mio, 220, 9
+197 None GEM-0 Pcp-756 (tune) // std cfg, mio, 375, 12
+198 None GEM-0 Pcp-756 (tune) // std cfg, mio, 375, 10
+199 None GEM-0 Pcp-756 (tune) // std cfg, mio, 375, 11
+200 None GEM-0 Pcp-756 (analog) // cfg 199, mio, 375
+201 None GEM-0 Pcp-756 (analog) // cfg 197, mio, 375
+202 None GEM-0 Pcp-756 (analog) // cfg 192, mio, 375
+203 None GEM-0 Pcp-756 (tune) // std cfg, mio, 375, 13
+204 None GEM-0 Pcp-756 (tune) // std cfg, mio, 375, 14
+205 None GEM-0 Pcp-756 (analog) // cfg 203, mio, 375
+206 None GEM-0 Pcp-756 (analog) // cfg 204, mio, 375
+207 None GEM-0 Pcp-756 (analog) // cfg 198, mio, 375
+
+208 None GEM-0 Pcp-756 (analog) // cfg 196 for 12MHz, mio_12MHz, 375 (ToT 9 at 40MHz)
+209 None GEM-0 Pcp-756 (analog) // cfg 198 for 12MHz, mio_12MHz, 375 (ToT 10 at 40MHz)
+210 None GEM-0 Pcp-756 (analog) // cfg 199 for 12MHz, mio_12MHz, 375 (ToT 11 at 40MHz)
+211 None GEM-0 Pcp-756 (analog) // cfg 197 for 12MHz, mio_12MHz, 375 (ToT 12 at 40MHz)
+212 None GEM-0 Pcp-756 (analog) // cfg 203 for 12MHz, mio_12MHz, 375 (ToT 13 at 40MHz)
+213 None GEM-0 Pcp-756 (analog) // cfg 204 for 12MHz, mio_12MHz, 375 (ToT 14 at 40MHz)
+-> cfg 197 (ToT 12 at 40 MHz) is the best
+
+214 None GEM-0 Pcp-756 (analog) // cfg 197_modified (Vthin_AltFine 155), mio_12MHz, 375
+215 None GEM-0 Pcp-756 (analog) // cfg 197_modified (Vthin_AltFine 160), mio_12MHz, 375
+-> changing Vthin_AltFine doesn't really do anything
+
+216 None GEM-0 Pcp-756 (threshold fast) // cfg 197_modified, mio_12MHz, 375
+217 None GEM-0 Pcp-756 (threshold) // cfg 197_modified, mio_12MHz, 375
+218 None GEM-0 Pcp-756 (threshold) // cfg 197_modified back to 40MHz, mio, 375

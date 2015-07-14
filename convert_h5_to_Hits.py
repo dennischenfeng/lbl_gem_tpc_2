@@ -355,9 +355,9 @@ myMeta = init_meta_struct()
 myExtraCalc = init_extracalc_struct()
 
 if __name__ == "__main__":
-    path_to_folder = '/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new'
+    path_to_folder = '/home/pixel/pybar/pybar_github/pybar/module_1'
     
-    h5_file_nums = [274,275,276,277,278,279,280,281,282,283,284,285,286,287,288,289, 291, 293,294,295,296,297,298,299,300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317,318,319,320,321,322,323,324,325,326,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345, 347,348,349,350,351,352,353,354,355,356,357, 360]    # CHOOSE THIS
+    h5_file_nums = [167,168,169,170,171]    # CHOOSE THIS
 
     # chose this parameter as big as possible to increase speed, but not too 
     # big otherwise program crashed:
@@ -366,5 +366,5 @@ if __name__ == "__main__":
     for h5_file_num in h5_file_nums:
         print("Converting h5 file num: " + str(h5_file_num))
 
-        convert_two_hit_tables(path_to_folder + '/' + str(h5_file_num) + '_module_202_new_stop_mode_ext_trigger_scan_interpreted.h5', path_to_folder + '/' + str(h5_file_num) + '_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root', h5_file_num)
+        convert_two_hit_tables(path_to_folder + '/' + str(h5_file_num) + '_module_1_stop_mode_ext_trigger_scan_interpreted.h5', path_to_folder + '/' + str(h5_file_num) + '_module_1_stop_mode_ext_trigger_scan_interpreted_Hits.root', h5_file_num)
     

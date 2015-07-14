@@ -27,8 +27,8 @@ void view_individual_events() {
 
 	// Setting up files, treereaders, histograms
 	string file_kind = "aggr"; // string that is either "aggr" or "non_aggr" to indicate whether or not its an aggregate file pair or not.
-	int file_num_input = 22;
-	string view_option = "3"; // choose what to view:
+	int file_num_input = 23;
+	string view_option = "1"; // choose what to view:
 	// "1" or "3d": view the events with their 3d reconstruction and line fit
 	// "2" or "SM_rel_BCID": numHits per SMRelBCID with the 3d reconstruction
 	// "3" or "sum_tots_per_length": running average of sumTots per 2mm
@@ -37,13 +37,13 @@ void view_individual_events() {
 	TFile *fileHits;
 	TFile *fileEventsCR;
 	if (file_kind.compare("non_aggr") == 0) {
-		fileHits = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root").c_str());
-		fileEventsCR = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(file_num_input) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_EventsCR.root").c_str());
+		fileHits = new TFile(("/home/pixel/pybar/pybar_github/pybar/module_1/" + to_string(file_num_input) + "_module_1_stop_mode_ext_trigger_scan_interpreted_Hits.root").c_str());
+		fileEventsCR = new TFile(("/home/pixel/pybar/pybar_github/pybar/module_1/" + to_string(file_num_input) + "_module_1_stop_mode_ext_trigger_scan_interpreted_EventsCR.root").c_str());
 	} else if (file_kind.compare("aggr") == 0) {
 		// fileHits = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/homemade_scripts/aggregate_data/1_module_202_new_AggrHits.root");
-		fileHits = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/homemade_scripts/aggregate_data/" + to_string(file_num_input) + "_module_202_new_AggrHits.root").c_str());
+		fileHits = new TFile(("/home/pixel/pybar/pybar_github/pybar/homemade_scripts/aggregate_data/" + to_string(file_num_input) + "_module_1_AggrHits.root").c_str());
 		// fileEventsCR = new TFile("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/homemade_scripts/aggregate_data/1_module_202_new_AggrEventsCR.root");
-		fileEventsCR = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/homemade_scripts/aggregate_data/" + to_string(file_num_input) + "_module_202_new_AggrEventsCR.root").c_str());
+		fileEventsCR = new TFile(("/home/pixel/pybar/pybar_github/pybar/homemade_scripts/aggregate_data/" + to_string(file_num_input) + "_module_1_AggrEventsCR.root").c_str());
 	} else {
 		cout << "Error: Input file_kind is not valid.";
 	}

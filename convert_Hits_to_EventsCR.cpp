@@ -51,8 +51,8 @@ void convert_Hits_to_EventsCR() {
 
 	
 
-	const int numFiles = 82; // CHOOSE THESE
-	const int fileNums[numFiles] = {274,275,276,277,278,279,280,281,282,283,284,285,286,287,288,289, 291, 293,294,295,296,297,298,299,300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317,318,319,320,321,322,323,324,325,326,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345, 347,348,349,350,351,352,353,354,355,356,357, 360};
+	const int numFiles = 5; // CHOOSE THESE
+	const int fileNums[numFiles] = {167,168,169,170,171};
 	// const int fileNums[numFiles] = {133};
 
 
@@ -60,7 +60,7 @@ void convert_Hits_to_EventsCR() {
 		cout << "Converting Hits file with h5 file num: " << fileNums[fileIndex] << "\n";
 
 		// Setting up TTreeReader for input file, also add the "s" branch to the ttree
-		TFile *in_file = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(fileNums[fileIndex]) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_Hits.root").c_str(), "UPDATE");
+		TFile *in_file = new TFile(("/home/pixel/pybar/pybar_github/pybar/module_1/" + to_string(fileNums[fileIndex]) + "_module_1_stop_mode_ext_trigger_scan_interpreted_Hits.root").c_str(), "UPDATE");
 
 		TTreeReader *reader = new TTreeReader("Table", in_file);
 
@@ -85,7 +85,7 @@ void convert_Hits_to_EventsCR() {
 		}
 
 		// Create EventsCR file and TTree
-		TFile *out_file = new TFile(("/home/pixel/pybar/tags/2.0.2_new/pyBAR-master/pybar/module_202_new/" + to_string(fileNums[fileIndex]) + "_module_202_new_stop_mode_ext_trigger_scan_interpreted_EventsCR.root").c_str(), "RECREATE");
+		TFile *out_file = new TFile(("/home/pixel/pybar/pybar_github/pybar/module_1/" + to_string(fileNums[fileIndex]) + "_module_1_stop_mode_ext_trigger_scan_interpreted_EventsCR.root").c_str(), "RECREATE");
 		TTree *t = new TTree("Table","EventsCR Data");
 		
 		UInt_t h5_file_num_EventsCR = 0; // must be different name than the one from raw file
@@ -349,11 +349,7 @@ void convert_Hits_to_EventsCR() {
 					eventStatus = 3;
 				} else if (eventStatus != 1) { // if line fit didn't fail, now apply criteria for good events
 					// Criteria for good event
-					if (num_hits < 50 
-						|| sum_squares_div_by_DoF >= 0.5
-						|| length_track < 5.0
-						|| sum_tots_div_by_length_track >= 150
-						|| duration < 200) 
+					if (false) 
 					{ // mark this as a bad event
 						eventStatus = 2;
 					}
