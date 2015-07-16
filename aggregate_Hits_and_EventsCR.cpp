@@ -29,9 +29,9 @@ void aggregate_Hits_and_EventsCR() {
 
 
 	// CHOOSE THESE 
-	int aggrFileNum = 24;
+	int aggrFileNum = 25;
 	const int numFiles = 5; 
-	const int fileNums[numFiles] = {167,168,169,170,171}; // h5 file nums of the Hits files (and corresponding EventsCR files) that will be aggregated into the Aggregate files
+	const int fileNums[numFiles] = {160,161,162,163,164}; // h5 file nums of the Hits files (and corresponding EventsCR files) that will be aggregated into the Aggregate files
 
 
 	// Make files, trees, and branches for AggrHits and AggrEventsCR
@@ -47,6 +47,7 @@ void aggregate_Hits_and_EventsCR() {
 	Double_t y_AggrHits = 0;
 	Double_t z_AggrHits = 0;
 	Double_t s_AggrHits = 0;
+	Double_t d_AggrHits = 0;
 	T_AggrHits->Branch("h5_file_num", &h5_file_num_AggrHits, "h5_file_num/i");
 	T_AggrHits->Branch("event_number", &event_number_AggrHits, "event_number/L");
 	T_AggrHits->Branch("tot", &tot_AggrHits, "tot/b");
@@ -57,6 +58,7 @@ void aggregate_Hits_and_EventsCR() {
 	T_AggrHits->Branch("y", &y_AggrHits, "y/D");
 	T_AggrHits->Branch("z", &z_AggrHits, "z/D");
 	T_AggrHits->Branch("s", &s_AggrHits, "s/D");
+	T_AggrHits->Branch("d", &d_AggrHits, "d/D");
 
 	TFile *f_AggrEventsCR = new TFile(("/home/pixel/pybar/pybar_github/pybar/homemade_scripts/aggregate_data/" + to_string(aggrFileNum) + "_module_1_AggrEventsCR.root").c_str(), "RECREATE");
 	TTree *T_AggrEventsCR = new TTree("Table", "Aggregate EventsCR Data");
@@ -124,6 +126,7 @@ void aggregate_Hits_and_EventsCR() {
 		TTreeReaderValue<Double_t> y(*readerHits, "y");
 		TTreeReaderValue<Double_t> z(*readerHits, "z");
 		TTreeReaderValue<Double_t> s(*readerHits, "s");
+		TTreeReaderValue<Double_t> d(*readerHits, "d");
 
 		TTreeReader *readerEventsCR = new TTreeReader("Table", f_EventsCR);
 		TTreeReaderValue<UInt_t> h5_file_num_EventsCR(*readerEventsCR, "h5_file_num");
@@ -193,6 +196,7 @@ void aggregate_Hits_and_EventsCR() {
 					y_AggrHits = *y;
 					z_AggrHits = *z;
 					s_AggrHits = *s;
+					d_AggrHits = *d;
 
 					T_AggrHits->Fill();
 					readerHits->Next();

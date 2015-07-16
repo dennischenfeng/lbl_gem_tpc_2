@@ -52,7 +52,7 @@ void convert_Hits_to_EventsCR() {
 	
 
 	const int numFiles = 5; // CHOOSE THESE
-	const int fileNums[numFiles] = {167,168,169,170,171};
+	const int fileNums[numFiles] = {160,161,162,163,164};
 	// const int fileNums[numFiles] = {133};
 
 
@@ -75,13 +75,16 @@ void convert_Hits_to_EventsCR() {
 		TTreeReaderValue<Double_t> z(*reader, "z");
 
 		// Add branch "s" if not already added before:
-		bool noSBranchBefore = false;
+		bool noSorDBranchBefore = false; // does not have s or d branch yet
 		Double_t s = 0;
+		Double_t d = 0;
 		TTree *T_Hits = (TTree*) in_file->Get("Table"); // tree from Hits file
 		TBranch *branch_S;
-		if (T_Hits->GetBranch("s") == 0) {
-			noSBranchBefore = true;
+		TBranch *branch_D;
+		if (T_Hits->GetBranch("s") == 0 || T_Hits->GetBranch("d") == 0) { 
+			noSorDBranchBefore = true;
 			branch_S = T_Hits->Branch("s", &s, "s/D");
+			branch_D = T_Hits->Branch("d", &d, "d/D");
 		}
 
 		// Create EventsCR file and TTree
@@ -260,8 +263,9 @@ void convert_Hits_to_EventsCR() {
 					// std::cout << "Theta : " << TMath::ATan(sqrt(pow(fitParams[1], 2) + pow(fitParams[3], 2))) << std::endl;
 				}
 
-				// Add s value to Hits file for each hit
+				// Add s and d value to Hits file for each hit
 				// s = AP . AB_hat; the "." is a dot product, and _hat means it's a unit vector. Point A is the mean XYZ position. Point P is the current hit position. AB_hat is a unit vector pointing along the track's best fit line, in the direction of increasing z.
+				// d = |AP x AB_hat|
 				TVector3 AB(param1, param3, 1);
 				TVector3 AB_hat = AB * (1 / sqrt(AB.Dot(AB)));
 				double max_s = 0; // maximum s in this event
@@ -270,9 +274,11 @@ void convert_Hits_to_EventsCR() {
 				for (int i = 0; i < endEntryNum - startEntryNum; i++) {
 					TVector3 AP(*x - meanX, *y - meanY, *z - meanZ);
 					s = AP.Dot(AB_hat);
+					d = (AP.Cross(AB_hat)).Mag(); // @@@ does this work properly?
 					
-					if (noSBranchBefore) {
+					if (noSorDBranchBefore) {
 						branch_S->Fill();
+						branch_D->Fill();
 					}
 
 					if (s > max_s) {

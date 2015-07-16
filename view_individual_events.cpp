@@ -27,11 +27,12 @@ void view_individual_events() {
 
 	// Setting up files, treereaders, histograms
 	string file_kind = "aggr"; // string that is either "aggr" or "non_aggr" to indicate whether or not its an aggregate file pair or not.
-	int file_num_input = 23;
-	string view_option = "1"; // choose what to view:
+	int file_num_input = 25;
+	string view_option = "4"; // choose what to view:
 	// "1" or "3d": view the events with their 3d reconstruction and line fit
 	// "2" or "SM_rel_BCID": numHits per SMRelBCID with the 3d reconstruction
-	// "3" or "sum_tots_per_length": running average of sumTots per 2mm
+	// "3" or "sum_tots_per_length": running sum of tots per 2mm
+	// "4" or "avg_d2_per_length": running average of d squared per 2 mm
 
 
 	TFile *fileHits;
@@ -59,6 +60,7 @@ void view_individual_events() {
 	TTreeReaderValue<Double_t> y(*readerHits, "y");
 	TTreeReaderValue<Double_t> z(*readerHits, "z");
 	TTreeReaderValue<Double_t> s(*readerHits, "s");
+	TTreeReaderValue<Double_t> d(*readerHits, "d");
 
 	TTreeReader *readerEventsCR = new TTreeReader("Table", fileEventsCR);
 
@@ -102,11 +104,11 @@ void view_individual_events() {
 	h_SM_rel_BCID->GetXaxis()->SetTitle("Stop Mode Relative BCID (BCIDs)");
 	h_SM_rel_BCID->GetYaxis()->SetTitle("Count (hits)");
 
-	TH1F *h_sum_tots_per_length = new TH1F("h_sum_tots_per_length", "SumTots of events within 2 mm intervals", 400, -40, 40); // intervals
+	TH1F *h_sum_tots_per_length = new TH1F("h_sum_tots_per_length", "SumTots of hits within 2 mm intervals", 400, -40, 40); // intervals
 	h_sum_tots_per_length->GetXaxis()->SetTitle("s (mm)");
-	h_sum_tots_per_length->GetYaxis()->SetTitle("Count (hits)");
+	h_sum_tots_per_length->GetYaxis()->SetTitle("Sum of ToTs (units of ToT)");
 
-
+	
 
 	bool quit = false; // if pressed q
 	
@@ -131,8 +133,9 @@ void view_individual_events() {
 		h_2d_occupancy->Reset(); // must do reset for histograms, cannot create a new hist to refresh it
 		h_SM_rel_BCID->Reset();
 		h_sum_tots_per_length->Reset();
+		TGraph *graph_avg_d2_per_length = new TGraph();
 
-		// Fill in graphs and hists with points and set title and axes
+		// Fill in graphs and hists with points
 		readerHits->SetEntry(entryNumRange_include[0]);
 		double minS = *s; // the lowest s in the event
 		double maxS = *s + *length_track; // the highest s in the event
@@ -143,15 +146,41 @@ void view_individual_events() {
 			h_SM_rel_BCID->Fill(*SM_rel_BCID);
 
 			// fill in for h_sum_tots_per_length
-			for (double currS = *s - 5.0; currS <= *s + 5.0; currS += 0.2) { // interval is 4 mm, increment is 0.5mm
-				if (currS >= minS + 5.0 && currS <= maxS - 5.0) { // cut off the first 2.0 and the last 2.0mm
+			for (double currS = *s - 1.0; currS <= *s + 1.0; currS += 0.2) { // set increment and interval
+				if (currS >= minS + 1.0 && currS <= maxS - 1.0) { // set cut offs
 					h_sum_tots_per_length->Fill(currS, *tot);
 				}
 			}
-
 			readerHits->Next();
 		}
-		
+
+		// Fill in graphs (using a slightly different method of looping) (this method was originally for graph_avg_d2_per_length)
+		int graph_index = 0; // index for setting points in the graphs
+		for (double currS = minS + 1.0; currS <= maxS - 1.0; currS += 0.2, graph_index++) {// set increment and cut offs
+
+			double currSumD2 = 0; // current sum of d squareds
+			int numHitsInInterval = 0; // number of hits in the interval
+			readerHits->SetEntry(entryNumRange_include[0]);
+			for (int i = 0; i < entryNumRange_include[1] - entryNumRange_include[0] + 1; i++) {
+				if (*s >= currS - 1.0) { // set interval
+					if (*s <= currS + 1.0) {	
+						currSumD2 += (*d); // @@@ square this
+						numHitsInInterval++;
+					} else {
+						break;
+					}
+				}
+
+				readerHits->Next();
+			}
+			graph_avg_d2_per_length->SetPoint(graph_index, currS, currSumD2/numHitsInInterval);
+		}
+
+		// @@@ 
+		for ()
+		cout<< "GRAPH AVG D2: " << graph_avg_d2_per_length->GetN() << "\n"; // @@@
+
+		// Set title and axes
 		string graphTitle = "3D Reconstruction and Line Fit for h5FileNum " + to_string(*h5_file_num_EventsCR) + ", SMEventNum " + to_string(*SM_event_num_EventsCR);
 		// graphTitle.append(to_string(*SM_event_num_EventsCR));
 		graph_3d->SetTitle(graphTitle.c_str());
@@ -160,8 +189,16 @@ void view_individual_events() {
 		graph_3d->GetZaxis()->SetTitle("z (mm)");
 		graph_3d->GetXaxis()->SetLimits(0, 20); // ROOT is buggy, x and y use setlimits()
 		graph_3d->GetYaxis()->SetLimits(-16.8, 0); // but z uses setrangeuser()
-		graph_3d->GetZaxis()->SetRangeUser(0, 40.96); 
+		graph_3d->GetZaxis()->SetRangeUser(0, 136.533); 
 		c1->SetTitle(graphTitle.c_str());
+
+		graph_avg_d2_per_length->SetTitle("Avg d squared of hits within 2 mm intervals");
+		graph_avg_d2_per_length->GetXaxis()->SetTitle("s (mm)");
+		graph_avg_d2_per_length->GetYaxis()->SetTitle("Avg d squared (mm^2)");
+		graph_avg_d2_per_length->GetXaxis()->SetLimits(-40, 40); // ROOT is buggy, x and y use setlimits()
+		graph_avg_d2_per_length->GetYaxis()->SetRangeUser(0, 10); 
+
+
 
 		// Draw the graph_3d on pad1 (upper pad)
 		c1->cd();
@@ -184,6 +221,11 @@ void view_individual_events() {
 		} else if (view_option.compare("sum_tots_per_length") == 0 || view_option.compare("3") == 0) {
 			pad2->SetRightMargin(0.25);
 			h_sum_tots_per_length->Draw("BAR");
+		} else if (view_option.compare("avg_d2_per_length") == 0 || view_option.compare("4") == 0) {
+			pad2->SetRightMargin(0.25);
+			graph_avg_d2_per_length->SetMarkerStyle(8);
+			graph_avg_d2_per_length->SetMarkerSize(0.5);
+			graph_avg_d2_per_length->Draw("AB");
 		} else {
 			cout << "Error: Input view_option is not valid.\n";
 		}

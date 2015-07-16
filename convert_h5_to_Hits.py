@@ -15,6 +15,7 @@ The TTree contains: (name of branch, root type descriptor, root type)
 8. y, D, Double_t 
 9. z, D, Double_t
 10. s, D, Double_t (s is 0 at mean XYZ, direction is along the event's best fit line, positive in the direction of increasing z; this script by itself doesn't create the s branch, but convert_Hits_to_EventsCR.cpp does)
+11. d, D, Double_t (d is the shortest distance from the hit to the best fit line, always positive value; this script by itself doesn't create the d branch, but convert_Hits_to_EventsCR.cpp does)
 
 Depending on whether you want to convert self_trigger scans or ext_trigger_stop_mode scans, you may need to choose which init_hit_struct() to use.
 
@@ -294,7 +295,9 @@ def convert_two_hit_tables(input_filename, output_filename, h5_file_num):
 
             myExtraCalc.x = (int(hit['column']) - 1) * 0.25 + 0.001 # + 0.001 is to get rid of any tiny roundoff errors due to using a doubles
             myExtraCalc.y = - (int(hit['row']) - 1) * 0.05 - 0.001 # minus sign because y is negative
-            myExtraCalc.z = (smRelBCID * 0.16) + 0.001 # Drift speed: 0.16 mm per BCID
+            myExtraCalc.z = (smRelBCID * 0.533333) + 0.001 
+            # At 40 MHz: Drift speed -> 0.16 mm per BCID
+            # At 12 MHz: Drift speed -> 0.533333 mm per BCID
             
             # Fill the tree that includes data from both trees. 
             tree.Fill()
@@ -357,7 +360,7 @@ myExtraCalc = init_extracalc_struct()
 if __name__ == "__main__":
     path_to_folder = '/home/pixel/pybar/pybar_github/pybar/module_1'
     
-    h5_file_nums = [167,168,169,170,171]    # CHOOSE THIS
+    h5_file_nums = [160,161,162,163,164]    # CHOOSE THIS
 
     # chose this parameter as big as possible to increase speed, but not too 
     # big otherwise program crashed:

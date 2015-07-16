@@ -1,4 +1,4 @@
-Number, Source, GEM Voltage, Pressure, Other parameters to record
+Number, Source, GEM Voltage, Pressure, Clock speed, Other parameters to record
 
 // Testing 10 MHz: mio_10MHz.bit
 160 CR GEM-440 Pcp-756 (SM, scantime-180 maxtrig-50) // gathering data to see time bins
@@ -50,3 +50,9 @@ Number, Source, GEM Voltage, Pressure, Other parameters to record
 216 None GEM-0 Pcp-756 (threshold fast) // cfg 197_modified, mio_12MHz, 375
 217 None GEM-0 Pcp-756 (threshold) // cfg 197_modified, mio_12MHz, 375
 218 None GEM-0 Pcp-756 (threshold) // cfg 197_modified back to 40MHz, mio, 375
+
+
+
+// 7/16/15 gathering events at 440 V
+220 CR GEM-440 Pcp-756 12MHz (SM, scantime-180 maxtrig-50) // gather 440 V events
+...

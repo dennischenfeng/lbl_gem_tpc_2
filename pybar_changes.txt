@@ -45,3 +45,22 @@ EXT TRIGGER STOP MODE:
 	    TRIGGER_SELECT      : 1  # Selecting trigger input: RX2 (TDC loop-through) (4), RX0 (2), MonHit/HitOR from Adapter Card (1), disabled (0)
 	    TRIGGER_INVERT      : 0  # Inverting trigger invert
 	    TRIGGER_VETO_SELECT : 255  # Selecting trigger veto: RX1 (2), RX FIFO full (1), disabled (0)
+
+12MHZ CLOCK SETUP:
+	Download the mio_12MHz.bit from Jens email (or it might be in the updated github branch now). In dut_configuration_mio.yaml:
+
+	USB:
+	    bit_file       : "mio_12MHz.bit"  # Selecting FPGA firmware
+	    board_id       : # Selecting USBpix board by ID
+	    avoid_download : False  # Avoiding download of FPGA firmware if already initialized
+
+	Also, in the config file (.cfg) you are using, you must change all 6 clock settings to 0, in order to have the system use the ref clocks only. The 6 clock settings (global parameters) in the .cfg file are:
+
+	CLK0_S0 0
+	CLK0_S1 0
+	CLK0_S2 0
+	CLK1_S0 0
+	CLK1_S1 0
+	CLK1_S2 0
+
+

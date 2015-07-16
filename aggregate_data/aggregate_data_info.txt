@@ -92,3 +92,7 @@ Events with >200 timebins (5th set of criteria)
 
 24. 440 V, mio.bit, no criteria
 {167,168,169,170,171}
+
+25. 440 V, mio_12MHz.bit, added 'd' branch
+{160,161,162,163,164} Same data as AggrNum23
+Events with >200 timebins (5th set of criteria)
