@@ -1,4 +1,4 @@
-Number, Source, GEM Voltage, Pressure, Clock speed, Other parameters to record
+Number, Source, GEM Voltage, Pressure, Clock speed, Config, Other parameters to record
 
 // Testing 10 MHz: mio_10MHz.bit
 160 CR GEM-440 Pcp-756 (SM, scantime-180 maxtrig-50) // gathering data to see time bins
@@ -56,3 +56,24 @@ Number, Source, GEM Voltage, Pressure, Clock speed, Other parameters to record
 // 7/16/15 gathering events at 440 V
 220 CR GEM-440 Pcp-756 12MHz (SM, scantime-180 maxtrig-50) // gather 440 V events
 ...
+
+257 CR GEM-440 Pcp-756 12MHz (SM, scantime-180 maxtrig-50) // gather 440 V events
+...
+
+// 7/21/15 
+// 324 was the tuning that should be good
+325 None GEM-0 Pcp-756 12MHz (analog, 197_modified cfg) // 
+326 None GEM-0 Pcp-756 12MHz (thresh_fast, 197_modified cfg) // 
+327 None GEM-0 Pcp-756 12MHz (analog, 324) //  -> nice, well centered at 9 ToT
+328 None GEM-0 Pcp-756 12MHz (thresh_fast, 324) // -> nice, centered at 60 PlsrDAC
+
+bad: 329 CR GEM-440 Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-50) // taking events with new tuning, ngen was being turned on so noise might have been added to scan
+...
+
+332 CR GEM-440 Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-50) // good events
+
+// 7/22/15
+456 CR GEM-440 Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-50) // good events
+...
+// lunch, then double purged
+456 CR GEM-440 Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-50) //

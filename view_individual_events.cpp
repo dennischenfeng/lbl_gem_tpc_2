@@ -27,12 +27,13 @@ void view_individual_events() {
 
 	// Setting up files, treereaders, histograms
 	string file_kind = "aggr"; // string that is either "aggr" or "non_aggr" to indicate whether or not its an aggregate file pair or not.
-	int file_num_input = 25;
-	string view_option = "4"; // choose what to view:
+	int file_num_input = 27;
+	string view_option = "1"; // choose what to view:
 	// "1" or "3d": view the events with their 3d reconstruction and line fit
 	// "2" or "SM_rel_BCID": numHits per SMRelBCID with the 3d reconstruction
 	// "3" or "sum_tots_per_length": running sum of tots per 2mm
 	// "4" or "avg_d2_per_length": running average of d squared per 2 mm
+	// "5" or "avg_tot_per_length": running average of tot per 2 mm
 
 
 	TFile *fileHits;
@@ -134,6 +135,7 @@ void view_individual_events() {
 		h_SM_rel_BCID->Reset();
 		h_sum_tots_per_length->Reset();
 		TGraph *graph_avg_d2_per_length = new TGraph();
+		TGraph *graph_avg_tot_per_length = new TGraph();
 
 		// Fill in graphs and hists with points
 		readerHits->SetEntry(entryNumRange_include[0]);
@@ -159,26 +161,34 @@ void view_individual_events() {
 		for (double currS = minS + 1.0; currS <= maxS - 1.0; currS += 0.2, graph_index++) {// set increment and cut offs
 
 			double currSumD2 = 0; // current sum of d squareds
+			int currSumTot = 0;
 			int numHitsInInterval = 0; // number of hits in the interval
 			readerHits->SetEntry(entryNumRange_include[0]);
 			for (int i = 0; i < entryNumRange_include[1] - entryNumRange_include[0] + 1; i++) {
 				if (*s >= currS - 1.0) { // set interval
 					if (*s <= currS + 1.0) {	
-						currSumD2 += (*d); // @@@ square this
+						currSumD2 += (*d)*(*d);
+						currSumTot += *tot;
 						numHitsInInterval++;
-					} else {
-						break;
 					}
 				}
-
 				readerHits->Next();
 			}
-			graph_avg_d2_per_length->SetPoint(graph_index, currS, currSumD2/numHitsInInterval);
+
+			if (numHitsInInterval > 0) { // 
+				graph_avg_d2_per_length->SetPoint(graph_index, currS, currSumD2/numHitsInInterval);
+				graph_avg_tot_per_length->SetPoint(graph_index, currS, currSumTot/numHitsInInterval);
+			} else {
+				graph_avg_d2_per_length->SetPoint(graph_index, currS, 0);
+				graph_avg_tot_per_length->SetPoint(graph_index, currS, 0);
+			}
 		}
 
 		// @@@ 
-		for ()
-		cout<< "GRAPH AVG D2: " << graph_avg_d2_per_length->GetN() << "\n"; // @@@
+		// for (int i = 0; i < graph_avg_d2_per_length->GetN(); i++) {
+		// 	cout<< "GRAPH POINTS: (" << graph_avg_d2_per_length->GetX()[i] << ",   " << graph_avg_d2_per_length->GetY()[i] << "\n"; // @@@
+		// }
+
 
 		// Set title and axes
 		string graphTitle = "3D Reconstruction and Line Fit for h5FileNum " + to_string(*h5_file_num_EventsCR) + ", SMEventNum " + to_string(*SM_event_num_EventsCR);
@@ -189,15 +199,20 @@ void view_individual_events() {
 		graph_3d->GetZaxis()->SetTitle("z (mm)");
 		graph_3d->GetXaxis()->SetLimits(0, 20); // ROOT is buggy, x and y use setlimits()
 		graph_3d->GetYaxis()->SetLimits(-16.8, 0); // but z uses setrangeuser()
-		graph_3d->GetZaxis()->SetRangeUser(0, 136.533); 
+		graph_3d->GetZaxis()->SetRangeUser(0,136.533); // @@@ was (0, 136.533); changed to view it closer
 		c1->SetTitle(graphTitle.c_str());
 
 		graph_avg_d2_per_length->SetTitle("Avg d squared of hits within 2 mm intervals");
 		graph_avg_d2_per_length->GetXaxis()->SetTitle("s (mm)");
 		graph_avg_d2_per_length->GetYaxis()->SetTitle("Avg d squared (mm^2)");
-		graph_avg_d2_per_length->GetXaxis()->SetLimits(-40, 40); // ROOT is buggy, x and y use setlimits()
+		graph_avg_d2_per_length->GetXaxis()->SetLimits(-60, 60);
 		graph_avg_d2_per_length->GetYaxis()->SetRangeUser(0, 10); 
 
+		graph_avg_tot_per_length->SetTitle("Avg ToT of hits within 2 mm intervals");
+		graph_avg_tot_per_length->GetXaxis()->SetTitle("s (mm)");
+		graph_avg_tot_per_length->GetYaxis()->SetTitle("Avg ToT (units of ToT)");
+		graph_avg_tot_per_length->GetXaxis()->SetLimits(-60, 60);
+		graph_avg_tot_per_length->GetYaxis()->SetRangeUser(0, 15); 
 
 
 		// Draw the graph_3d on pad1 (upper pad)
@@ -226,6 +241,11 @@ void view_individual_events() {
 			graph_avg_d2_per_length->SetMarkerStyle(8);
 			graph_avg_d2_per_length->SetMarkerSize(0.5);
 			graph_avg_d2_per_length->Draw("AB");
+		} else if (view_option.compare("avg_tot_per_length") == 0 || view_option.compare("5") == 0) {
+			pad2->SetRightMargin(0.25);
+			graph_avg_tot_per_length->SetMarkerStyle(8);
+			graph_avg_tot_per_length->SetMarkerSize(0.5);
+			graph_avg_tot_per_length->Draw("AB");
 		} else {
 			cout << "Error: Input view_option is not valid.\n";
 		}
@@ -249,7 +269,7 @@ void view_individual_events() {
 
 			int n = 1000;
 			double t0 = 0; // t is the z coordinate
-			double dt = 40.96;
+			double dt = 136.533;
 			TPolyLine3D *l = new TPolyLine3D(n);
 			for (int i = 0; i <n;++i) {
 			  double t = t0+ dt*i/n;
