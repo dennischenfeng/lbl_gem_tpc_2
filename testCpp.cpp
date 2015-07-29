@@ -1,8 +1,16 @@
 
 void testCpp() {
 
-	TCanvas *c1 = new TCanvas("c1","Test", 1000, 10, 900, 550);
-	c1->SetRightMargin(0.25);
+	num = 0;
+	for (int i = 448; i<= 688;i++ ) {
+		cout << i << ",";
+		num++;
+	}
+	cout << "LENGTH: " << num << "\n";
+
+
+	// TCanvas *c1 = new TCanvas("c1","Test", 1000, 10, 900, 550);
+	// c1->SetRightMargin(0.25);
 	// TH1F *h1 = new TH1F("h1", "Test", 10, 0, 10);
 	// h1->Fill(3);
 	// h1->Fill(3);
@@ -77,33 +85,33 @@ void testCpp() {
 
 	// TGRAPH
 
-	const Int_t n = 6;
-	Double_t x[n];
-	Double_t y[n];
-	x[0] = 3; y[0] = 4;
-	x[1] = 4; y[1] = 4.5;
-	x[3] = 5; y[2] = 5.3;
-	x[2] = 6.3; y[3] = 6.8;
-	x[4] = 8; y[4] = 8.2;
-	x[5] = 0; y[5] = 0;
+	// const Int_t n = 6;
+	// Double_t x[n];
+	// Double_t y[n];
+	// x[0] = 3; y[0] = 4;
+	// x[1] = 4; y[1] = 4.5;
+	// x[3] = 5; y[2] = 5.3;
+	// x[2] = 6.3; y[3] = 6.8;
+	// x[4] = 8; y[4] = 8.2;
+	// x[5] = 0; y[5] = 0;
 
-	// TGraph *gr = new TGraph();
-	TGraph *gr = new TGraph(n, x, y);
-	// gr->SetLineColor(2);
-	// gr->SetLineWidth(4);
-	// gr->SetMarkerColor(4);
-	// gr->SetMarkerStyle(21);
-	gr->SetTitle("a simple graph");
-	gr->GetXaxis()->SetTitle("X title");
-	gr->GetXaxis()->SetRangeUser(0, 8);
-	gr->GetYaxis()->SetTitle("Y title");
-	gr->GetYaxis()->SetRangeUser(0, 8);
+	// // TGraph *gr = new TGraph();
+	// TGraph *gr = new TGraph(n, x, y);
+	// // gr->SetLineColor(2);
+	// // gr->SetLineWidth(4);
+	// // gr->SetMarkerColor(4);
+	// // gr->SetMarkerStyle(21);
+	// gr->SetTitle("a simple graph");
+	// gr->GetXaxis()->SetTitle("X title");
+	// gr->GetXaxis()->SetRangeUser(0, 8);
+	// gr->GetYaxis()->SetTitle("Y title");
+	// gr->GetYaxis()->SetRangeUser(0, 8);
 
-	gr->SetPoint(0, 1, 2);
-	// gr->SetPoint(1, 3, 2);
-	// gr->SetPoint(2, 2, 2);
-	gr->Draw("a*");
-	c1->Update();
+	// gr->SetPoint(0, 1, 2);
+	// // gr->SetPoint(1, 3, 2);
+	// // gr->SetPoint(2, 2, 2);
+	// gr->Draw("a*");
+	// c1->Update();
 	
 	// // TFitResultPtr fit = gr->Fit("pol1", "WS");
 	// // fit->Print("V");

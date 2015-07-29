@@ -2,7 +2,7 @@
 # Runs a specified scan as many times as you want. Also adds to run_extra_info_txt the info that you specify.
 
 # OTHER_INFO="CR GEM-400 Pcp-756 scantime-180 maxtrig-4 (bulk CR events)"
-NUM_SCANS=20
+NUM_SCANS=10
 
 
 

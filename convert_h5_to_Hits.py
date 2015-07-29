@@ -360,7 +360,7 @@ myExtraCalc = init_extracalc_struct()
 if __name__ == "__main__":
     path_to_folder = '/home/pixel/pybar/pybar_github/pybar/module_1'
     
-    h5_file_nums = [381,382,383,384,385,386,387,  389,390,391,392,393,394,395,396,397,398,399,400,401,402,403,404,405,406,407,408,  410,411,412,  414,415,416,417,418,419,420,421,422,423,424,425,426,427,428,429,430,431,432,433,434,435,436,437,438,439,440,441,442,443,444,445,446]    # CHOOSE THIS
+    h5_file_nums = [503]    # CHOOSE THIS
 
     # chose this parameter as big as possible to increase speed, but not too 
     # big otherwise program crashed:

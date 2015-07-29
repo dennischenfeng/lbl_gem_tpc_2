@@ -77,3 +77,15 @@ bad: 329 CR GEM-440 Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-50) // takin
 ...
 // lunch, then double purged
 456 CR GEM-440 Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-50) //
+
+// 7/23/15
+599 CR GEM-440 Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-50) // good events
+..
+// bad 605 - 614 -> the GEM voltage might have been 455 instead of 440 
+
+// 7/24/15
+658 CR GEM-440 Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-50) // good events
+...
+688
+// lunch, then double purged
+689 CR GEM-440 Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-50) // good events
