@@ -124,3 +124,5 @@ All usable events; no criteria
 } (length 110 + 221 = 331)
 >60 time bins: (num_hits < 50 
 						|| duration < 60)
+
+						

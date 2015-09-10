@@ -89,3 +89,61 @@ bad: 329 CR GEM-440 Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-50) // takin
 688
 // lunch, then double purged
 689 CR GEM-440 Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-50) // good events
+
+// 7/30/15
+770 CR GEM-420 Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-50) // 420 V
+...
+
+// 7/31/15 - testing batteries
+816
+
+// 2015/8/3
+819 CR GEM-420 Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-50) // 420 V
+...
+823
+
+// 2015/8/6
+832 CR GEM-420 Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-50) // 420 V
+
+// 2015/8/7
+893 CR GEM-420 Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-50) // 420 V
+
+// 2015/8/10
+914 CR GEM-420 Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-50) // 420 V
+
+// 2015/8/11
+1007 CR GEM-420 Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-50) // 420 V
+
+// 2015/8/13
+1007 Fe55 GEM-400 Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-50) // Seeing if source is well centered -> it is!
+
+// 2015/8/27
+1045 Fe55 GEM-400 Pcp-758 12MHz cfg-324 (SM, scantime-180 maxtrig-50)
+// 2015/8/28
+1046 Fe55 GEM-400 Pcp-757
+ 12MHz cfg-324 (SM, scantime-180 maxtrig-50)
+
+// 2015/8/31
+1047 Fe55 GEM-400 Pcp-756
+
+// 2015/9/2
+1048 Fe55 GEM-400 Pcp-758
+
+// 2015/9/3
+1080 None GEM-400 Pcp-758 12MHz cfg-324 (SM, scantime-180 maxtrig-10) // Seeing what the scope signal is. It's not CR because it's too frequent, but what is it?
+...
+1087 Neutron GEM-400 Pcp-758 12MHz cfg-324 (SM, scantime-180 maxtrig-10) // Getting neutrons, but with the noisy spot
+1105 Neutron GEM-400 Pcp-758 12MHz cfg-324 (SM, scantime-180 maxtrig-150) // Getting neutrons, but with the noisy spot
+...
+1110 Neutron GEM-400 Pcp-758 12MHz cfg-324 (SM, scantime-180 maxtrig-300) // Getting neutrons, but with the noisy spot
+...
+1112 Neutron GEM-390 Pcp-758 12MHz cfg-324 (SM, scantime-180 maxtrig-300) // Getting neutrons, but with the noisy spot
+...
+1114 Neutron GEM-370 Pcp-758 12MHz cfg-324 (SM, scantime-180 maxtrig-300) // Getting neutrons, but with the noisy spot
+...
+1119 Neutron GEM-380 Pcp-758 12MHz cfg-324 (SM, scantime-180 maxtrig-100) // Getting neutrons, but with the noisy spot
+...
+1126 None GEM-380 Pcp-758 12MHz cfg-324 (SM, scantime-180 maxtrig-100) // No source, just noisy spot
+
+// 2015/9/9
+1127 None GEM-420 Pcp-758 12MHz cfg-324 (SM, scantime-180 maxtrig-100) // No source, just noisy spot

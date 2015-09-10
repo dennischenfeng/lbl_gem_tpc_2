@@ -26,8 +26,10 @@ void view_individual_events() {
 	gROOT->Reset();
 
 	// Setting up files, treereaders, histograms
-	string file_kind = "aggr"; // string that is either "aggr" or "non_aggr" to indicate whether or not its an aggregate file pair or not.
-	int file_num_input = 29;
+	string file_kind = "non_aggr"; // string that is either "aggr" or "non_aggr" to indicate whether or not its an aggregate file pair or not.
+
+	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	int file_num_input = 1127; // Can only put one file
 	string view_option = "1"; // choose what to view:
 	// "1" or "3d": view the events with their 3d reconstruction and line fit
 	// "2" or "SM_rel_BCID": numHits per SMRelBCID with the 3d reconstruction
@@ -88,7 +90,7 @@ void view_individual_events() {
 	TTreeReaderValue<UInt_t> duration(*readerEventsCR, "duration");
 
 	// Initialize the canvas and graph_3d
-	TCanvas *c1 = new TCanvas("c1","3D Occupancy for Specified SM Event", 1000, 10, 900, 1000);
+	TCanvas *c1 = new TCanvas("c1","3D Occupancy for Specified SM Event", 1000, 10, 900, 1000); // @@@ made it bigger
 	// c1->SetRightMargin(0.25);
 	TPad *pad1 = new TPad("pad1", "pad1", 0, 0.5, 1, 1.0); // upper pad
 	pad1->SetRightMargin(0.25);
@@ -157,16 +159,17 @@ void view_individual_events() {
 		}
 
 		// Fill in graphs (using a slightly different method of looping) (this method was originally for graph_avg_d2_per_length)
+		//@@@ changed slightly
 		int graph_index = 0; // index for setting points in the graphs
-		for (double currS = minS + 1.0; currS <= maxS - 1.0; currS += 0.2, graph_index++) {// set increment and cut offs
+		for (double currS = minS + 0.3; currS <= maxS - 0.3; currS += 0.6, graph_index++) {// set increment and cut offs
 
 			double currSumD2 = 0; // current sum of d squareds
 			int currSumTot = 0;
 			int numHitsInInterval = 0; // number of hits in the interval
 			readerHits->SetEntry(entryNumRange_include[0]);
 			for (int i = 0; i < entryNumRange_include[1] - entryNumRange_include[0] + 1; i++) {
-				if (*s >= currS - 1.0) { // set interval
-					if (*s <= currS + 1.0) {	
+				if (*s >= currS - 0.3) { // set interval
+					if (*s <= currS + 0.3) {	
 						currSumD2 += (*d)*(*d);
 						currSumTot += *tot;
 						numHitsInInterval++;
@@ -206,7 +209,7 @@ void view_individual_events() {
 		graph_avg_d2_per_length->GetXaxis()->SetTitle("s (mm)");
 		graph_avg_d2_per_length->GetYaxis()->SetTitle("Avg d squared (mm^2)");
 		graph_avg_d2_per_length->GetXaxis()->SetLimits(-60, 60);
-		graph_avg_d2_per_length->GetYaxis()->SetRangeUser(0, 10); 
+		graph_avg_d2_per_length->GetYaxis()->SetRangeUser(0, 3); // @@@ changeb ack to 10
 
 		graph_avg_tot_per_length->SetTitle("Avg ToT of hits within 2 mm intervals");
 		graph_avg_tot_per_length->GetXaxis()->SetTitle("s (mm)");
@@ -232,10 +235,10 @@ void view_individual_events() {
 			h_2d_occupancy->Draw("COLZ");
 		} else if (view_option.compare("SM_rel_BCID") == 0 || view_option.compare("2") == 0) {
 			pad2->SetRightMargin(0.25);
-			h_SM_rel_BCID->Draw("COLZ");
+			h_SM_rel_BCID->Draw("HIST");
 		} else if (view_option.compare("sum_tots_per_length") == 0 || view_option.compare("3") == 0) {
 			pad2->SetRightMargin(0.25);
-			h_sum_tots_per_length->Draw("BAR");
+			h_sum_tots_per_length->Draw("HIST");
 		} else if (view_option.compare("avg_d2_per_length") == 0 || view_option.compare("4") == 0) {
 			pad2->SetRightMargin(0.25);
 			graph_avg_d2_per_length->SetMarkerStyle(8);

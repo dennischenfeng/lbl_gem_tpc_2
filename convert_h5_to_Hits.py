@@ -357,10 +357,13 @@ myHit = init_hit_struct()
 myMeta = init_meta_struct()
 myExtraCalc = init_extracalc_struct()
 
+
 if __name__ == "__main__":
     path_to_folder = '/home/pixel/pybar/pybar_github/pybar/module_1'
     
-    h5_file_nums = [503]    # CHOOSE THIS
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    h5_file_nums = [1127]    # CHOOSE THIS
+    # h5_file_nums = [1075,1076,1077,1078,1079]
 
     # chose this parameter as big as possible to increase speed, but not too 
     # big otherwise program crashed:

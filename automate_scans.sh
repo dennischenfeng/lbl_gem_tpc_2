@@ -2,7 +2,7 @@
 # Runs a specified scan as many times as you want. Also adds to run_extra_info_txt the info that you specify.
 
 # OTHER_INFO="CR GEM-400 Pcp-756 scantime-180 maxtrig-4 (bulk CR events)"
-NUM_SCANS=10
+NUM_SCANS=2
 
 
 
@@ -19,7 +19,7 @@ strindex() { #from glenn jackman on StackOverflow; finds index of first appearan
 }
 
 
-for ((i=1; i<=NUM_SCANS; i++)); do
+for ((i=1; i<=NUM_SCANS; 1++)); do
 	echo "@@ Starting automate_scan's scan #: $i"
 	python scan_ext_trigger_stop_mode.py; # CHANGE THIS FOR DIFFERENT SCAN
 	
