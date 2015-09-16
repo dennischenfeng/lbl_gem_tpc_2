@@ -18,6 +18,8 @@ void view_all_events() {
 
 	// Setting up files, treereaders, histograms
 	string file_kind = "non_aggr"; // string that is either "aggr" or "non_aggr" to indicate whether or not its an aggregate file pair or not.
+
+	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	int file_num_input = 503; // either an h5filenum or aggrfilenum
 	string view_option = "4"; // choose what to view:
 	// "1" or "zenith": zenith angle distribution

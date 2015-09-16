@@ -26,10 +26,10 @@ void view_individual_events() {
 	gROOT->Reset();
 
 	// Setting up files, treereaders, histograms
-	string file_kind = "non_aggr"; // string that is either "aggr" or "non_aggr" to indicate whether or not its an aggregate file pair or not.
+	string file_kind = "aggr"; // string that is either "aggr" or "non_aggr" to indicate whether or not its an aggregate file pair or not.
 
 	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	int file_num_input = 1127; // Can only put one file
+	int file_num_input = 30; // Can only put one file
 	string view_option = "1"; // choose what to view:
 	// "1" or "3d": view the events with their 3d reconstruction and line fit
 	// "2" or "SM_rel_BCID": numHits per SMRelBCID with the 3d reconstruction

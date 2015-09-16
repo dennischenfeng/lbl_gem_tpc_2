@@ -147,3 +147,19 @@ bad: 329 CR GEM-440 Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-50) // takin
 
 // 2015/9/9
 1127 None GEM-420 Pcp-758 12MHz cfg-324 (SM, scantime-180 maxtrig-100) // No source, just noisy spot
+
+// NOW USING HELIUM ISOBUTANE GAS 
+
+// 2015/9/10
+1140 None GEM-330 Pcp-758 12MHz cfg-324 (SM, scantime-180 maxtrig-10) //
+
+1147 None GEM-310 Pcp-758 12MHz cfg-324 (SM, scantime-180 maxtrig-10) //
+
+1158 Neutron GEM-310 Pcp-762 12MHz cfg-324 (SM, scantime-180 maxtrig-10) // radioactive neutron source
+... 
+1158 Neutron GEM-310 Pcp-762 12MHz cfg-324 (SM, scantime-180 maxtrig-30) // radioactive neutron source
+... 
+1179 Neutron GEM-320 Pcp-762 12MHz cfg-324 (SM, scantime-180 maxtrig-30) // radioactive neutron source
+... 
+1199 Neutron GEM-316 Pcp-757 12MHz cfg-324 (SM, scantime-180 maxtrig-10) // HC4631 neutron source
+... 

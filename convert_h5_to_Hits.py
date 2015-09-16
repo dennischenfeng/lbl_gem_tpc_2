@@ -362,7 +362,7 @@ if __name__ == "__main__":
     path_to_folder = '/home/pixel/pybar/pybar_github/pybar/module_1'
     
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    h5_file_nums = [1127]    # CHOOSE THIS
+    h5_file_nums = [1199,1200,1201,1202,1203,1204,1205,1206,1207,1208]    # CHOOSE THIS
     # h5_file_nums = [1075,1076,1077,1078,1079]
 
     # chose this parameter as big as possible to increase speed, but not too 

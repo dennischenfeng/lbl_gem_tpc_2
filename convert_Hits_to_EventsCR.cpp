@@ -51,8 +51,8 @@ void convert_Hits_to_EventsCR() {
 
 	
 	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	const int numFiles = 1; // CHOOSE THESE
-	const int fileNums[numFiles] = {1127};
+	const int numFiles = 10; // CHOOSE THESE
+	const int fileNums[numFiles] = {1199,1200,1201,1202,1203,1204,1205,1206,1207,1208};
 	// const int fileNums[numFiles] = {133};
 
 

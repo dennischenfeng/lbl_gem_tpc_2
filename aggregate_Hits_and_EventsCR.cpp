@@ -27,7 +27,7 @@ void aggregate_Hits_and_EventsCR() {
 	***/
 	gROOT->Reset(); 
 
-
+	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// CHOOSE THESE 
 	int aggrFileNum = 30;
 	const int numFiles = 331; 
