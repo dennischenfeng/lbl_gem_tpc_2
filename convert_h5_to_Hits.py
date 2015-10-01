@@ -5,17 +5,18 @@ file of the desired scan to convert. Note that the metadata table isn't actually
 anymore (it's a vestigial part of this script).
 
 The TTree contains: (name of branch, root type descriptor, root type)
-1. h5_file_num, i, UInt_t
+1. h5_file_num, i, UInt_t       (used for aggregate)
 2. event_number, L, Long64_t (same numbers as indicated by h5 file)
 3. tot, b, UChar_t
-4. relative_BCID, b, UChar_t
-5. SM_event_num, L, Long64_t
-6. SM_rel_BCID, i, UInt_t
-7. x, D, Double_t (in mm)
-8. y, D, Double_t 
-9. z, D, Double_t
-10. s, D, Double_t (s is 0 at mean XYZ, direction is along the event's best fit line, positive in the direction of increasing z; this script by itself doesn't create the s branch, but convert_Hits_to_EventsCR.cpp does)
-11. d, D, Double_t (d is the shortest distance from the hit to the best fit line, always positive value; this script by itself doesn't create the d branch, but convert_Hits_to_EventsCR.cpp does)
+4. relative_BCID, b, UChar_t    (15 per event number)                          
+    (branches 2,3,4 from h5)
+5. SM_event_num, L, Long64_t    (actual event in the h5, not numbers in h5)
+6. SM_rel_BCID, i, UInt_t       (BCID is the time bin, 255 for each SM_event_num)
+7. x, D, Double_t (in mm)       (converted from row and column numbers)
+8. y, D, Double_t               (negative values)
+9. z, D, Double_t               (calculated from drift speed* rel BCID. First hit is 0)
+10. s, D, Double_t (length along best fit line. s is 0 at mean XYZ, direction is along the event's best fit line, positive in the direction of increasing z; this script by itself doesn't create the s branch, but convert_Hits_to_EventsCR.cpp does)
+11. d, D, Double_t (perpendicular distance to best fit line. d is the shortest distance from the hit to the best fit line, always positive value; this script by itself doesn't create the d branch, but convert_Hits_to_EventsCR.cpp does)
 
 Depending on whether you want to convert self_trigger scans or ext_trigger_stop_mode scans, you may need to choose which init_hit_struct() to use.
 
@@ -237,8 +238,14 @@ def convert_two_hit_tables(input_filename, output_filename, h5_file_num):
             event = meta_iter.next()
         except StopIteration:
             pass
+
+# meta not really used
+
+
+#Hits
         
         for index, hit in enumerate(hits):
+            #hit is 1 row in the h5 file; loop over rows
             myHit.event_number = int(hit['event_number'])
             #myHit.trigger_number = int(hit['trigger_number']) # use this for self trigger scans
             myHit.trigger_time_stamp = int(hit['trigger_time_stamp']) # use this for stop mode scans
@@ -362,12 +369,12 @@ if __name__ == "__main__":
     path_to_folder = '/home/pixel/pybar/pybar_github/pybar/module_1'
     
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    h5_file_nums = [1199,1200,1201,1202,1203,1204,1205,1206,1207,1208]    # CHOOSE THIS
+    h5_file_nums = [1220,1221,1222,1223,1224,1225,1226,1227,1228,1229,1230,1231,1232,1233,1234,1235,1236,1237,1238,1239,1240,1241,1242,1243,1244,1245,1246,1247,1248,1249,1250,1251,1252,1253,1254,1255,1256,1257,1258,1259,1260,1261,1262,1263,1264,1265,1266,1267,1268,1269,1270]    # CHOOSE THIS
     # h5_file_nums = [1075,1076,1077,1078,1079]
 
     # chose this parameter as big as possible to increase speed, but not too 
     # big otherwise program crashed:
-    chunk_size = 50000  
+    chunk_size = 50000  #don't touch this (50000)
     
     for h5_file_num in h5_file_nums:
         print("Converting h5 file num: " + str(h5_file_num))

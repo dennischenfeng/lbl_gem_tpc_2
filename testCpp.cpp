@@ -2,7 +2,7 @@
 void testCpp() {
 
 	num = 0;
-	for (int i = 448; i<= 688;i++ ) {
+	for (int i = 1220; i<= 1270;i++ ) {
 		cout << i << ",";
 		num++;
 	}

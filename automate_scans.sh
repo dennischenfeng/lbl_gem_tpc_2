@@ -3,7 +3,7 @@
 
 # OTHER_INFO="CR GEM-400 Pcp-756 scantime-180 maxtrig-4 (bulk CR events)"
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-NUM_SCANS=20
+NUM_SCANS=50
 
 
 
@@ -45,15 +45,16 @@ NUM_SCANS=20
 
 cd /home/pixel/pybar/pybar_github/pybar/scans
 
-strindex() { #from glenn jackman on StackOverflow; finds index of first appearance of substring; used in this script to find LAST_NUM
-  x="${1%%$2*}";
-  [[ $x = $1 ]] && echo -1 || echo ${#x};
-}
+
+#strindex() { #from glenn jackman on StackOverflow; finds index of first appearance of substring; used in this script to find LAST_NUM
+#  x="${1%%$2*}";
+#  [[ $x = $1 ]] && echo -1 || echo ${#x};
+#}
 
 
 for ((i=1; i<=NUM_SCANS; i++)); do
 	echo "@@ Starting automate_scan's scan #: $i"
-	
+	python scan_ext_trigger_stop_mode.py;
 	
 	#python scan_fei4_self_trigger.py;
 

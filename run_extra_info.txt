@@ -163,3 +163,54 @@ bad: 329 CR GEM-440 Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-50) // takin
 ... 
 1199 Neutron GEM-316 Pcp-757 12MHz cfg-324 (SM, scantime-180 maxtrig-10) // HC4631 neutron source
 ... 
+1209 Neutron GEM-316 Pcp-757 12MHz cfg-324 (SM, scantime-180 maxtrig-10) // HC4631 neutron source, He/isobutane (80,20)
+... 
+1220-1469 Neutron GEM-316 Pcp-757 12MHz cfg-324 (SM, scantime-180 maxtrig-10) // HC4631 neutron source, He/isobutane (80,20)
+... 
+ 1471-1519 Neutron GEM-315 Pcp-760 12MHz cfg-324 (SM, scantime-180 maxtrig-10) // HC4631 neutron source, He/ CF4 (80,20)
+
+1520-1569 Neutron GEM-326 Pcp-760 12MHz cfg-324 (SM, scantime-180 maxtrig-10) // HC4631 neutron source, He/ CF4 (80,20)
+
+1570-1619 Neutron GEM-335 Pcp-760 12MHz cfg-324 (SM, scantime-180 maxtrig-10) // HC4631 neutron source, He/ CF4 (80,20)
+
+1620-1669 Neutron GEM-335 Pcp-760 12MHz cfg-324 (SM, scantime-180 maxtrig-10) // HC4631 neutron source, He/ CF4 (80,20)
+
+1670-1719 Neutron GEM-345 Pcp-760 12MHz cfg-324 (SM, scantime-180 maxtrig-10) // HC4631 neutron source, He/ CF4 (80,20)
+
+1720-1769 Neutron GEM-560 Pcp-758 12MHz cfg-324 (SM, scantime-180 maxtrig-10) // HC4631 neutron source, CF4
+
+1770-1819 Neutron GEM-575 Pcp-758 12MHz cfg-324 (SM, scantime-180 maxtrig-10) // HC4631 neutron source, CF4
+
+1820-1869 Neutron GEM-590 Pcp-758 12MHz cfg-324 (SM, scantime-180 maxtrig-10) // HC4631 neutron source, CF4
+
+1870-1919 Neutron GEM-605 Pcp-760 12MHz cfg-324 (SM, scantime-180 maxtrig-10) // HC4631 neutron source, CF4
+
+1920-1969 Neutron GEM-605 Pcp-760 12MHz cfg-324 (SM, scantime-180 maxtrig-10) // HC4631 neutron source, CF4
+
+1970-2019 Neutron GEM-590 V3=8000V, from 6000V Pcp-760 12MHz cfg-324 (SM, scantime-180 maxtrig-10) // HC4631 neutron source, CF4
+
+2020-2069 CRs GEM-320 V3=6000V Pcp-760 12MHz cfg-324 (SM, scantime-180 maxtrig-10) // NO neutron source, ~ (1/4 CF4 + 3/4 He/CF4) - ALL ABORTED
+
+2070-2119 CRs GEM-335 V3=6000V Pcp-760 12MHz cfg-324 (SM, scantime-180 maxtrig-10) // NO neutron source, ~ (1/4 CF4 + 3/4 He/CF4) - ALL ABORTED
+
+2122-2129 CRs GEM-300 V3=6000V Pcp-760 12MHz cfg-324 (SM, scantime-80 maxtrig-3) // NO neutron source, ~ (1/4 CF4 + 3/4 He/CF4) - HALF ABORTED, HALF WERE SUSPECTED TO BE NOISE
+
+2130-2134 CRs GEM-320 V3=6000V Pcp-760 12MHz cfg-324 (SM, scantime-80 maxtrig-3) // NO neutron source, ~ (1/4 CF4 + 3/4 He/CF4) - SUSPECTED NOISE
+
+2135-2138 CRs GEM-320 V3=6000V Pcp-760 12MHz cfg-324 (SM, scantime-180 maxtrig-20) // NO neutron source, ~ (He/CF4)
+
+2141-2142 CRs GEM-340 V3=6000V Pcp-760 12MHz cfg-324 (SM, scantime-180 maxtrig-20) // NO neutron source, ~ (He/CF4)
+
+2143-2145 CRs GEM-360 V3=6000V Pcp-760 12MHz cfg-324 (SM, scantime-180 maxtrig-20) // NO neutron source, ~ (He/CF4)
+
+2146-2148 CRs GEM-360 V3=6000V Pcp-760 12MHz cfg-324 (SM, scantime-180 maxtrig-2) // NO neutron source, ~ (He/CF4)
+
+2149-2168 CRs GEM-360 V3=6000V Pcp-760 12MHz cfg-324 (SM, scantime-180 maxtrig-1) // NO neutron source, ~ (He/CF4)
+
+2169-2180 CRs GEM-340 V3=6000V Pcp-759 12MHz cfg-324 (SM, scantime-180 maxtrig-1) // NO neutron source, ~ (He/CF4)
+
+2181-2190 CRs GEM-400 V3=6000V Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-1) // NO neutron source, ~ (Ar/CO2)
+
+2191-2210 CRs GEM-420 V3=6000V Pcp-756 12MHz cfg-324 (SM, scantime-180 maxtrig-1) // NO neutron source, ~ (Ar/CO2)
+
+2211-2260 CRs GEM-420 V3=6000V Pcp-757 12MHz cfg-324 (SM, scantime-180 maxtrig-1) // NO neutron source, ~ (Ar/CO2)
